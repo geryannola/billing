@@ -85,7 +85,9 @@ class Pelanggan_model extends CI_Model
     {
         $this->db->select('*, pelanggan.alamat');
         $this->db->select('pelanggan.is_aktive');
-        $this->db->order_by('pelanggan.id_cabang', $this->id, $this->order);
+        $this->db->order_by('pelanggan.is_aktive', 'ASC');
+        $this->db->order_by('pelanggan.id_cabang', $this->order);
+        $this->db->order_by('pelanggan.id_pelanggan', $this->order);
         $this->db->like('id_pelanggan', $q);
         $this->db->or_like('nama_pelanggan', $q);
         $this->db->or_like('pelanggan.alamat', $q);

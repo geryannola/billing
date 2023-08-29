@@ -17,7 +17,7 @@ class Login extends CI_Controller
   }
   public function loginsubmit()
   {
-    
+
     $username = $this->input->post('username');
     $user = $this->M_user->get($username);
 

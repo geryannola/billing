@@ -114,6 +114,29 @@
 						<a href="" class="dropdown-toggle">
 							<i class="menu-icon fa fa-bell"></i>
 							<span class="menu-text">
+								Mikrotik
+							</span>
+
+							<b class="arrow fa fa-angle-down"></b>
+						</a>
+
+						<b class="arrow"></b>
+
+						<ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>Dashboard">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Hostpot
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a href="" class="dropdown-toggle">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
 								Kas
 							</span>
 

@@ -367,8 +367,6 @@ class Pelanggan extends CI_Controller
     public function delete($id)
     {
         $row = $this->Pelanggan_model->get_by_id($id);
-        var_dump($row);
-        // die();
         if ($row) {
             $nama_pelanggan = $row->nama_pelanggan;
             $alamat = $row->alamat;
@@ -386,12 +384,9 @@ class Pelanggan extends CI_Controller
             );
 
             $this->Whatsapp_model->whatsapp($data_wa);
-            var_dump($row->id_user);
-            // die();
             if ($row->id_user != "") {
                 $this->Users_model->delete($row->id_user);
             }
-
             // $this->Pelanggan_model->delete($id);
             $this->session->set_flashdata('message', 'Delete Record Success');
             redirect(site_url('pelanggan'));

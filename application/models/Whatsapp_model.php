@@ -6,9 +6,6 @@ if (!defined('BASEPATH'))
 class Whatsapp_model extends CI_Model
 {
 
-    public $table = 'users';
-    public $id = 'id_username';
-    public $order = 'DESC';
 
     function __construct()
     {
@@ -17,7 +14,7 @@ class Whatsapp_model extends CI_Model
 
     function whatsapp($data = [])
     {
-        $message1             = $data['message'];
+        $message             = $data['message'];
         $phonenumber         = $data['phonenumber'];
         $url                 = $data['url'];
         $link1               = $data['link'];
@@ -37,7 +34,7 @@ class Whatsapp_model extends CI_Model
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => '{
             "phonenumber": ' . $phonenumber . ',
-            "message" : "' . $message1 . '"
+            "message" : "' . $message . '"
         }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json'
