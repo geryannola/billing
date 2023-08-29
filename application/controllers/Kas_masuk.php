@@ -9,7 +9,7 @@ class Kas_masuk extends CI_Controller
     {
         parent::__construct();
         check_not_login();
-        $this->load->model('kas_masuk_model');
+        $this->load->model('Kas_masuk_model');
         $this->load->library('form_validation');
     }
 
@@ -28,8 +28,10 @@ class Kas_masuk extends CI_Controller
 
         $config['per_page'] = 10;
         $config['page_query_string'] = FALSE;
-        $config['total_rows'] = $this->kas_masuk_model->total_rows($q);
-        $kas_masuk = $this->kas_masuk_model->get_limit_data($config['per_page'], $start, $q);
+        $config['total_rows'] = $this->Kas_masuk_model->total_rows($q);
+        $kas_masuk = $this->Kas_masuk_model->get_limit_data($config['per_page'], $start, $q);
+        $data['satu'] = '1';
+        $total_masuk = $this->Kas_masuk_model->total_masuk();
         $config['full_tag_open'] = '<ul class="pagination pagination-sm no-margin pull-right">';
         $config['full_tag_close'] = '</ul>';
         $this->load->library('pagination');
@@ -41,13 +43,15 @@ class Kas_masuk extends CI_Controller
             'pagination' => $this->pagination->create_links(),
             'total_rows' => $config['total_rows'],
             'start' => $start,
+            'total_masuk' => set_value('total_masuk', $total_masuk->masuk),
         );
+
         $this->template->load('template', 'kas_masuk/kas_masuk_list', $data);
     }
 
     public function read($id)
     {
-        $row = $this->kas_masuk_model->get_by_id($id);
+        $row = $this->Kas_masuk_model->get_by_id($id);
         if ($row) {
             $data = array(
                 'id_km' => $row->id_km,
@@ -74,7 +78,7 @@ class Kas_masuk extends CI_Controller
             // 'keluar' => set_value('keluar'),
             // 'jenis' => set_value('jenis'),
         );
-        $data['cara_bayar'] = $this->kas_masuk_model->tampil_bayar();
+        $data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
         $this->template->load('template', 'kas_masuk/kas_masuk_form', $data);
     }
 
@@ -94,7 +98,7 @@ class Kas_masuk extends CI_Controller
                 'jenis' => 'Masuk',
             );
 
-            $this->kas_masuk_model->insert($data);
+            $this->Kas_masuk_model->insert($data);
             $this->session->set_flashdata('message', 'Create Record Success');
             redirect(site_url('kas_masuk'));
         }
@@ -102,7 +106,7 @@ class Kas_masuk extends CI_Controller
 
     public function update($id)
     {
-        $row = $this->kas_masuk_model->get_by_id($id);
+        $row = $this->Kas_masuk_model->get_by_id($id);
 
         if ($row) {
             $data = array(
@@ -112,7 +116,9 @@ class Kas_masuk extends CI_Controller
                 'tgl_km' => set_value('tgl_km', $row->tgl_km),
                 'uraian_km' => set_value('uraian_km', $row->uraian_km),
                 'masuk' => set_value('masuk', $row->masuk),
+                'id_cara_bayar' => set_value('id_cara_bayar', $row->id_cara_bayar),
             );
+            $data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
             $this->template->load('template', 'kas_masuk/kas_masuk_form', $data);
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
@@ -131,11 +137,12 @@ class Kas_masuk extends CI_Controller
                 'tgl_km' => $this->input->post('tgl_km', TRUE),
                 'uraian_km' => $this->input->post('uraian_km', TRUE),
                 'masuk' => $this->input->post('masuk', TRUE),
+                'id_cara_bayar' => $this->input->post('id_cara_bayar', TRUE),
                 'keluar' => 0,
                 'jenis' => 'Masuk',
             );
 
-            $this->kas_masuk_model->update($this->input->post('id_km', TRUE), $data);
+            $this->Kas_masuk_model->update($this->input->post('id_km', TRUE), $data);
             $this->session->set_flashdata('message', 'Update Record Success');
             redirect(site_url('kas_masuk'));
         }
@@ -143,10 +150,10 @@ class Kas_masuk extends CI_Controller
 
     public function delete($id)
     {
-        $row = $this->kas_masuk_model->get_by_id($id);
+        $row = $this->Kas_masuk_model->get_by_id($id);
 
         if ($row) {
-            $this->kas_masuk_model->delete($id);
+            $this->Kas_masuk_model->delete($id);
             $this->session->set_flashdata('message', 'Delete Record Success');
             redirect(site_url('kas_masuk'));
         } else {
@@ -192,10 +199,11 @@ class Kas_masuk extends CI_Controller
         xlsWriteLabel($tablehead, $kolomhead++, "Tgl Pemasukan");
         xlsWriteLabel($tablehead, $kolomhead++, "Uraian Pemasukan");
         xlsWriteLabel($tablehead, $kolomhead++, "Masuk");
+        xlsWriteLabel($tablehead, $kolomhead++, "Cara Bayar");
         // xlsWriteLabel($tablehead, $kolomhead++, "Keluar");
         // xlsWriteLabel($tablehead, $kolomhead++, "Jenis");
 
-        foreach ($this->kas_masuk_model->get_all() as $data) {
+        foreach ($this->Kas_masuk_model->get_all() as $data) {
             $kolombody = 0;
 
             //ubah xlsWriteLabel menjadi xlsWriteNumber untuk kolom numeric
@@ -203,7 +211,7 @@ class Kas_masuk extends CI_Controller
             xlsWriteLabel($tablebody, $kolombody++, $data->tgl_km);
             xlsWriteLabel($tablebody, $kolombody++, $data->uraian_km);
             xlsWriteNumber($tablebody, $kolombody++, $data->masuk);
-            // xlsWriteNumber($tablebody, $kolombody++, $data->keluar);
+            xlsWriteLabel($tablebody, $kolombody++, $data->cara_bayar);
             // xlsWriteLabel($tablebody, $kolombody++, $data->jenis);
 
             $tablebody++;
@@ -220,7 +228,7 @@ class Kas_masuk extends CI_Controller
         header("Content-Disposition: attachment;Filename=kas_masuk.doc");
 
         $data = array(
-            'kas_masuk_data' => $this->kas_masuk_model->get_all(),
+            'kas_masuk_data' => $this->Kas_masuk_model->get_all(),
             'start' => 0
         );
 

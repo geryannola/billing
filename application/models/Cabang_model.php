@@ -28,25 +28,27 @@ class Cabang_model extends CI_Model
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
     }
-    
+
     // get total rows
-    function total_rows($q = NULL) {
+    function total_rows($q = NULL)
+    {
         $this->db->like('id_cabang', $q);
-	$this->db->or_like('cabang', $q);
-	$this->db->or_like('is_aktive', $q);
-	$this->db->or_like('create_date', $q);
-	$this->db->from($this->table);
+        $this->db->or_like('cabang', $q);
+        $this->db->or_like('is_aktive', $q);
+        $this->db->or_like('create_date', $q);
+        $this->db->from($this->table);
         return $this->db->count_all_results();
     }
 
     // get data with limit and search
-    function get_limit_data($limit, $start = 0, $q = NULL) {
+    function get_limit_data($limit, $start = 0, $q = NULL)
+    {
         $this->db->order_by($this->id, $this->order);
         $this->db->like('id_cabang', $q);
-	$this->db->or_like('cabang', $q);
-	$this->db->or_like('is_aktive', $q);
-	$this->db->or_like('create_date', $q);
-	$this->db->limit($limit, $start);
+        $this->db->or_like('cabang', $q);
+        $this->db->or_like('is_aktive', $q);
+        $this->db->or_like('create_date', $q);
+        $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }
 
@@ -69,17 +71,18 @@ class Cabang_model extends CI_Model
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }
-     public function edit_data($id)
+    public function edit_data($id)
     {
         $this->db->from('cabang');
-        $this->db->where('id_cabang',$id);
+        $this->db->where('id_cabang', $id);
         return $this->db->get()->row_array();
     }
-     public function tampil_cabang(){
-        $result=array();
+    public function tampil_cabang()
+    {
+        $result = array();
         $this->db->select('*');
         $this->db->from('cabang');
+        $this->db->where('is_aktive', '1');
         return $this->db->get()->result_array();
     }
-
 }

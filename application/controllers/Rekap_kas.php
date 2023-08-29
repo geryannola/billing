@@ -9,6 +9,8 @@ class Rekap_kas extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Rekap_kas_model');
+        $this->load->model('Kas_masuk_model');
+        $this->load->model('Kas_keluar_model');
         $this->load->library('form_validation');
     }
 
@@ -29,6 +31,8 @@ class Rekap_kas extends CI_Controller
         $config['page_query_string'] = FALSE;
         $config['total_rows'] = $this->Rekap_kas_model->total_rows($q);
         $rekap_kas = $this->Rekap_kas_model->get_limit_data($config['per_page'], $start, $q);
+        $total_masuk = $this->Kas_masuk_model->total_masuk();
+        $total_keluar = $this->Kas_keluar_model->total_keluar();
         $config['full_tag_open'] = '<ul class="pagination pagination-sm no-margin pull-right">';
         $config['full_tag_close'] = '</ul>';
         $this->load->library('pagination');
@@ -40,6 +44,8 @@ class Rekap_kas extends CI_Controller
             'pagination' => $this->pagination->create_links(),
             'total_rows' => $config['total_rows'],
             'start' => $start,
+            'total_keluar' => set_value('total_keluar', $total_keluar->keluar),
+            'total_masuk' => set_value('total_masuk', $total_masuk->masuk),
         );
         $this->template->load('template', 'rekap_kas/kas_list', $data);
     }
@@ -74,7 +80,9 @@ class Rekap_kas extends CI_Controller
             'masuk' => set_value('masuk'),
             'keluar' => set_value('keluar'),
             'jenis' => set_value('jenis'),
+            'id_cara_bayar' => set_value('id_cara_bayar'),
         );
+        $data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
         $this->template->load('template', 'rekap_kas/kas_form', $data);
     }
 
@@ -91,6 +99,7 @@ class Rekap_kas extends CI_Controller
                 'masuk' => $this->input->post('masuk', TRUE),
                 'keluar' => $this->input->post('keluar', TRUE),
                 'jenis' => $this->input->post('jenis', TRUE),
+                'id_cara_bayar' => $this->input->post('id_cara_bayar', TRUE),
             );
 
             $this->Rekap_kas_model->insert($data);
@@ -113,7 +122,9 @@ class Rekap_kas extends CI_Controller
                 'masuk' => set_value('masuk', $row->masuk),
                 'keluar' => set_value('keluar', $row->keluar),
                 'jenis' => set_value('jenis', $row->jenis),
+                'id_cara_bayar' => set_value('id_cara_bayar', $row->id_cara_bayar),
             );
+            $data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
             $this->template->load('template', 'rekap_kas/kas_form', $data);
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
@@ -134,6 +145,7 @@ class Rekap_kas extends CI_Controller
                 'masuk' => $this->input->post('masuk', TRUE),
                 'keluar' => $this->input->post('keluar', TRUE),
                 'jenis' => $this->input->post('jenis', TRUE),
+                'id_cara_bayar' => $this->input->post('id_cara_bayar', TRUE),
             );
 
             $this->Rekap_kas_model->update($this->input->post('id_km', TRUE), $data);
@@ -171,8 +183,8 @@ class Rekap_kas extends CI_Controller
     public function excel()
     {
         $this->load->helper('exportexcel');
-        $namaFile = "kas_masjid.xls";
-        $judul = "kas_masjid";
+        $namaFile = "kas.xls";
+        $judul = "kas";
         $tablehead = 0;
         $tablebody = 1;
         $nourut = 1;
@@ -195,6 +207,7 @@ class Rekap_kas extends CI_Controller
         xlsWriteLabel($tablehead, $kolomhead++, "Masuk");
         xlsWriteLabel($tablehead, $kolomhead++, "Keluar");
         xlsWriteLabel($tablehead, $kolomhead++, "Jenis");
+        xlsWriteLabel($tablehead, $kolomhead++, "Cara Bayar");
 
         foreach ($this->Rekap_kas_model->get_all() as $data) {
             $kolombody = 0;
@@ -206,6 +219,7 @@ class Rekap_kas extends CI_Controller
             xlsWriteNumber($tablebody, $kolombody++, $data->masuk);
             xlsWriteNumber($tablebody, $kolombody++, $data->keluar);
             xlsWriteLabel($tablebody, $kolombody++, $data->jenis);
+            xlsWriteLabel($tablebody, $kolombody++, $data->cara_bayar);
 
             $tablebody++;
             $nourut++;
@@ -218,14 +232,14 @@ class Rekap_kas extends CI_Controller
     public function word()
     {
         header("Content-type: application/vnd.ms-word");
-        header("Content-Disposition: attachment;Filename=kas_masjid.doc");
+        header("Content-Disposition: attachment;Filename=kas.doc");
 
         $data = array(
-            'kas_masjid_data' => $this->Rekap_kas_model->get_all(),
+            'kas_data' => $this->Rekap_kas_model->get_all(),
             'start' => 0
         );
 
-        $this->load->view('rekap_kas/kas_masjid_doc', $data);
+        $this->load->view('rekap_kas/kas_doc', $data);
     }
 }
 

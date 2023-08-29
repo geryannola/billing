@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Billing ABhostpotr</title>
+    <title>BILLING ABhostpot</title>
     <link rel="stylesheet" href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css') ?>" />
     <style>
         body {
@@ -24,19 +24,11 @@
         </tr>
         <tr>
             <td>Masuk</td>
-            <td><?php echo $masuk; ?></td>
-        </tr>
-        <tr>
-            <td>Keluar</td>
-            <td><?php echo $keluar; ?></td>
-        </tr>
-        <tr>
-            <td>Jenis</td>
-            <td><?php echo $jenis; ?></td>
+            <td><?php echo number_format($masuk); ?></td>
         </tr>
         <tr>
             <td></td>
-            <td><a href="<?php echo site_url('rekap_kas') ?>" class="btn btn-default">Cancel</a></td>
+            <td><a href="<?php echo site_url('kas_masuk') ?>" class="btn btn-default">Cancel</a></td>
         </tr>
     </table>
 </body>

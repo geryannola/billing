@@ -77,11 +77,10 @@
             <td width='200'>Status Pelanggan <?php echo form_error('is_aktive') ?></td>
             <td>
               <select class="form-control" name="is_aktive">
-                <?php $is_aktive = $data_pelanggan['is_aktive'] ?>
-                <?php if ($is_aktive == 1) { ?>
+                <?php if ($is_aktive == '1') { ?>
                   <option value="1" selected>Aktive</option>
                   <option value="2">Non Aktive</option>
-                <?php } else if ($is_aktive == 2) { ?>
+                <?php } else if ($is_aktive == '2') { ?>
                   <option value="1">Aktive</option>
                   <option value="2" selected>Non Aktive</option>
                 <?php } else { ?>
@@ -95,8 +94,9 @@
           <tr>
             <td></td>
             <td><input type="hidden" name="id_pelanggan" value="<?php echo $id_pelanggan; ?>" />
+              <input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
               <button type="submit" class="btn btn-danger"><i class="fa fa-floppy-o"></i> <?php echo $button ?></button>
-              <a href="<?php echo site_url('user_level') ?>" class="btn btn-info"><i class="fa fa-sign-out"></i> Kembali</a>
+              <a href="<?php echo site_url('pelanggan') ?>" class="btn btn-info"><i class="fa fa-sign-out"></i> Kembali</a>
             </td>
           </tr>
         </table>

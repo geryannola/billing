@@ -9,14 +9,14 @@
 
 				<table class='table table-bordered'>
 					<tr>
-						<td width='200'>Pelanggan <?php echo form_error('id_pelanggan') ?></td>
-						<td><select class="form-control" name="id_pelanggan" id="id_pelanggan">
+						<td width='200'>Cabang <?php echo form_error('id_cabang') ?></td>
+						<td><select class="form-control" name="id_cabang" id="id_cabang">
 								<option value=''>-- Pilih --</option>
-								<?php foreach ($pelanggan as $rows) { ?>
-									<?php if ($id_pelanggan == $rows['id_pelanggan']) { ?>
-										<option value="<?php echo $rows['id_pelanggan'] ?>" selected><?php echo $rows['cabang'] ?> - <?php echo $rows['nama_pelanggan'] ?></option>
+								<?php foreach ($cabang as $rows) { ?>
+									<?php if ($id_cabang == $rows['id_cabang']) { ?>
+										<option value="<?php echo $rows['id_cabang'] ?>" selected><?php echo $rows['cabang'] ?></option>
 									<?php } else { ?>
-										<option value="<?php echo $rows['id_pelanggan'] ?>"><?php echo $rows['cabang'] ?> - <?php echo $rows['nama_pelanggan'] ?></option>
+										<option value="<?php echo $rows['id_cabang'] ?>"><?php echo $rows['cabang'] ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
@@ -48,25 +48,6 @@
 									<?php } ?>
 								<?php } ?>
 							</select>
-						</td>
-					</tr>
-					<tr>
-						<td width='200'>Diskon <?php echo form_error('diskon') ?></td>
-						<td><select class="form-control" name="diskon" id="diskon">
-								<option value=''>-- Pilih --</option>
-								<option value='0'>Tidak Ada</option>
-								<option value='10'>10 %</option>
-								<option value='20'>20 %</option>
-								<option value='30'>30 %</option>
-								<option value='40'>40 %</option>
-								<option value='50'>50 %</option>
-								<option value='60'>60 %</option>
-								<option value='70'>70 %</option>
-								<option value='80'>80 %</option>
-								<option value='90'>90 %</option>
-								<option value='100'>1000 %</option>
-							</select>
-
 						</td>
 					</tr>
 					<tr>

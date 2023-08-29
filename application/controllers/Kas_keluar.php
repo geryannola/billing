@@ -10,6 +10,7 @@ class Kas_keluar extends CI_Controller
         parent::__construct();
         check_not_login();
         $this->load->model('Kas_keluar_model');
+        $this->load->model('Kas_masuk_model');
         $this->load->library('form_validation');
     }
 
@@ -30,6 +31,7 @@ class Kas_keluar extends CI_Controller
         $config['page_query_string'] = FALSE;
         $config['total_rows'] = $this->Kas_keluar_model->total_rows($q);
         $kas_keluar = $this->Kas_keluar_model->get_limit_data($config['per_page'], $start, $q);
+        $total_keluar = $this->Kas_keluar_model->total_keluar();
         $config['full_tag_open'] = '<ul class="pagination pagination-sm no-margin pull-right">';
         $config['full_tag_close'] = '</ul>';
         $this->load->library('pagination');
@@ -41,6 +43,7 @@ class Kas_keluar extends CI_Controller
             'pagination' => $this->pagination->create_links(),
             'total_rows' => $config['total_rows'],
             'start' => $start,
+            'total_keluar' => set_value('total_keluar', $total_keluar->keluar),
         );
         $this->template->load('template', 'kas_keluar/kas_keluar_list', $data);
     }
@@ -70,10 +73,12 @@ class Kas_keluar extends CI_Controller
             'id_km' => set_value('id_km'),
             'tgl_km' => set_value('tgl_km'),
             'uraian_km' => set_value('uraian_km'),
-            // 'masuk' => set_value('masuk'),
             'keluar' => set_value('keluar'),
+            'id_cara_bayar' => set_value('id_cara_bayar'),
+            // 'masuk' => set_value('masuk'),
             // 'jenis' => set_value('jenis'),
         );
+        $data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
         $this->template->load('template', 'kas_keluar/kas_keluar_form', $data);
     }
 
@@ -90,6 +95,7 @@ class Kas_keluar extends CI_Controller
                 'masuk' => 0,
                 'keluar' => $this->input->post('keluar', TRUE),
                 'jenis' => 'Keluar',
+                'id_cara_bayar' => $this->input->post('id_cara_bayar', TRUE),
             );
 
             $this->Kas_keluar_model->insert($data);
@@ -109,10 +115,10 @@ class Kas_keluar extends CI_Controller
                 'id_km' => set_value('id_km', $row->id_km),
                 'tgl_km' => set_value('tgl_km', $row->tgl_km),
                 'uraian_km' => set_value('uraian_km', $row->uraian_km),
-                // 'masuk' => set_value('masuk', $row->masuk),
                 'keluar' => set_value('keluar', $row->keluar),
-                // 'jenis' => set_value('jenis', $row->jenis),
+                'id_cara_bayar' => set_value('id_cara_bayar', $row->id_cara_bayar),
             );
+            $data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
             $this->template->load('template', 'kas_keluar/kas_keluar_form', $data);
         } else {
             $this->session->set_flashdata('message', 'Record Not Found');
@@ -133,6 +139,7 @@ class Kas_keluar extends CI_Controller
                 'masuk' => 0,
                 'keluar' => $this->input->post('keluar', TRUE),
                 'jenis' => 'Keluar',
+                'id_cara_bayar' => $this->input->post('id_cara_bayar', TRUE),
             );
 
             $this->Kas_keluar_model->update($this->input->post('id_km', TRUE), $data);
@@ -191,9 +198,8 @@ class Kas_keluar extends CI_Controller
         xlsWriteLabel($tablehead, $kolomhead++, "No");
         xlsWriteLabel($tablehead, $kolomhead++, "Tgl Km");
         xlsWriteLabel($tablehead, $kolomhead++, "Uraian Km");
-        // xlsWriteLabel($tablehead, $kolomhead++, "Masuk");
         xlsWriteLabel($tablehead, $kolomhead++, "Keluar");
-        // xlsWriteLabel($tablehead, $kolomhead++, "Jenis");
+        xlsWriteLabel($tablehead, $kolomhead++, "Cara Bayar");
 
         foreach ($this->Kas_keluar_model->get_all() as $data) {
             $kolombody = 0;
@@ -202,9 +208,8 @@ class Kas_keluar extends CI_Controller
             xlsWriteNumber($tablebody, $kolombody++, $nourut);
             xlsWriteLabel($tablebody, $kolombody++, $data->tgl_km);
             xlsWriteLabel($tablebody, $kolombody++, $data->uraian_km);
-            // xlsWriteNumber($tablebody, $kolombody++, $data->masuk);
             xlsWriteNumber($tablebody, $kolombody++, $data->keluar);
-            // xlsWriteLabel($tablebody, $kolombody++, $data->jenis);
+            xlsWriteLabel($tablebody, $kolombody++, $data->cara_bayar);
 
             $tablebody++;
             $nourut++;
@@ -224,7 +229,7 @@ class Kas_keluar extends CI_Controller
             'start' => 0
         );
 
-        $this->load->view('kas_keluar/kas_masjid_doc', $data);
+        $this->load->view('kas_keluar/kas_keluar_doc', $data);
     }
 }
 

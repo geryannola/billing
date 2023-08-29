@@ -19,7 +19,8 @@ class Kas_masuk_model extends CI_Model
     // get all
     function get_all()
     {
-        $this->db->order_by($this->id, $this->order);
+        $this->db->order_by('tgl_km', $this->order);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         $this->db->where($this->jenis, 'Masuk');
         return $this->db->get($this->table)->result();
     }
@@ -34,13 +35,9 @@ class Kas_masuk_model extends CI_Model
     // get total rows
     function total_rows($q = NULL)
     {
-        //        $this->db->like('id_km', $q);
-        // $this->db->or_like('tgl_km', $q);
-        // $this->db->or_like('uraian_km', $q);
-        // $this->db->or_like('masuk', $q);
-        // $this->db->or_like('keluar', $q);
-        // $this->db->or_like('jenis', $q);
+        $this->db->like('jenis', $q);
         $this->db->where('jenis', 'Masuk');
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         $this->db->from($this->table);
         return $this->db->count_all_results();
     }
@@ -50,12 +47,8 @@ class Kas_masuk_model extends CI_Model
     {
         $masuk = 'Masuk';
         $this->db->order_by($this->id, $this->order);
-        //        $this->db->like('id_km', $q);
-        // $this->db->or_like('tgl_km', $q);
-        // $this->db->or_like('uraian_km', $q);
-        // $this->db->or_like('masuk', $q);
-        // $this->db->or_like('keluar', $q);
-        // $this->db->or_like('jenis', $q);
+        $this->db->like('cara_bayar', $q);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         $this->db->where('jenis', $masuk);
         $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
@@ -87,7 +80,22 @@ class Kas_masuk_model extends CI_Model
         $this->db->from('cara_bayar');
         return $this->db->get()->result_array();
     }
+    public function total_masuk()
+    {
+        $this->db->select_sum('masuk');
+        $this->db->where($this->jenis, 'Masuk');
+        return $this->db->get($this->table)->row();
+    }
+    public function total_masuk_per($tgl1, $tgl2)
+    {
+        $this->db->select_sum('masuk');
+        $this->db->where($this->jenis, 'Masuk');
+        $this->db->where('tgl_km BETWEEN "' . $tgl1 . '" AND "' . $tgl2 . '"');
+        // $this->db->where($this->jenis, 'Masuk');
+        return $this->db->get($this->table)->row();
+    }
 }
+// this->db->where('sell_date BETWEEN "' . date('Y-m-d', strtotime($start_date)) . '" and "' . date('Y-m-d', strtotime($end_date)) . '"');
 
 /* End of file kas_masuk_model.php */
 /* Location: ./application/models/kas_masuk_model.php */

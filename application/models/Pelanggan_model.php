@@ -18,23 +18,44 @@ class Pelanggan_model extends CI_Model
     // get all
     function get_all()
     {
+        $this->db->order_by('pelanggan.id_pelanggan', $this->order);
+        $this->db->select('*', 'pelanggan.alamat', 'pelanggan.is_aktive');
+        $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
+        return $this->db->get($this->table)->result();
+    }
+
+    function get_all_cabang($id)
+    {
         $this->db->order_by($this->id, $this->order);
+        $this->db->select('*', 'pelanggan.alamat', 'pelanggan.is_aktive');
+        $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
+        $this->db->where('pelanggan.is_aktive', '1');
+        $this->db->where('pelanggan.id_cabang', $id);
         return $this->db->get($this->table)->result();
     }
 
     // get data by id
     function get_by_id($id)
     {
-        $this->db->select('*, pelanggan.alamat');
         $this->db->from('pelanggan');
-        $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->select('*');
+
         $this->db->where($this->id, $id);
         return $this->db->get()->row();
+    }
 
-        //   $this->db->from('pelanggan');
-        // $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
-        // $this->db->where('id_pelanggan',$id);
-        // return $this->db->get()->row_array();
+    // get data by id
+    function get_by_id_rincian($id)
+    {
+        $this->db->from('pelanggan');
+        $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
+        $this->db->select('*');
+
+        $this->db->where($this->id, $id);
+        return $this->db->get()->row();
     }
 
     // get total rows
@@ -42,7 +63,20 @@ class Pelanggan_model extends CI_Model
     {
         $this->db->like('id_pelanggan', $q);
         $this->db->or_like('nama_pelanggan', $q);
+        $this->db->or_like('pelanggan.alamat', $q);
+        $this->db->or_like('cabang', $q);
+        $this->db->or_like('nama_paket', $q);
         $this->db->from($this->table);
+        $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
+        return $this->db->count_all_results();
+    }
+
+    function total_rows_riwayat($id, $q = NULL)
+    {
+        $this->db->from('tagihan');
+        $this->db->where('id_pelanggan', $id);
+        $this->db->where('status_bayar', 'Y');
         return $this->db->count_all_results();
     }
 
@@ -50,13 +84,30 @@ class Pelanggan_model extends CI_Model
     function get_limit_data($limit, $start = 0, $q = NULL)
     {
         $this->db->select('*, pelanggan.alamat');
+        $this->db->select('pelanggan.is_aktive');
         $this->db->order_by('pelanggan.id_cabang', $this->id, $this->order);
         $this->db->like('id_pelanggan', $q);
         $this->db->or_like('nama_pelanggan', $q);
+        $this->db->or_like('pelanggan.alamat', $q);
+        $this->db->or_like('cabang', $q);
+        $this->db->or_like('nama_paket', $q);
         $this->db->from('pelanggan');
         $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
         $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
         $this->db->limit($limit, $start);
+        return $this->db->get()->result();
+    }
+    // get data with limit and search
+    function get_limit_riwayat($id)
+    {
+        $this->db->order_by('tahun', 'DESC');
+        $this->db->order_by('bulan', 'DESC');
+        $this->db->from('tagihan');
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = tagihan.id_cara_bayar');
+        $this->db->join('bulan', 'bulan.id_bulan = tagihan.bulan');
+        $this->db->where('id_pelanggan', $id);
+        $this->db->where('status_bayar', 'Y');
+        $this->db->limit(12);
         return $this->db->get()->result();
     }
 
@@ -84,6 +135,7 @@ class Pelanggan_model extends CI_Model
     {
         $this->db->from('pelanggan');
         $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->select('*', 'pelanggan.alamat', 'pelanggan.is_aktive AS aaktif');
         $this->db->where('id_pelanggan', $id);
         return $this->db->get()->row_array();
     }
@@ -93,6 +145,7 @@ class Pelanggan_model extends CI_Model
         $this->db->select('*');
         $this->db->from('pelanggan');
         $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
+        $this->db->where('pelanggan.is_aktive', '1');
         return $this->db->get()->result_array();
     }
 }

@@ -43,12 +43,6 @@
 						</td>
 					</tr>
 					<tr>
-						<td width='200'>Notification</td>
-						<td>
-							<input type="checkbox" name="kirim" value="1"> Kirim WA
-						</td>
-					</tr>
-					<tr>
 						<td></td>
 						<td><input type="hidden" name="id_tagihan" value="<?php echo $id_tagihan; ?>" />
 							<input type="hidden" name="nama_bulan" value="<?php echo $nama_bulan; ?>" />

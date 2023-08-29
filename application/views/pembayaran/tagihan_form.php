@@ -9,7 +9,7 @@
 
 				<table class='table table-bordered'>
 					<tr>
-						<td width='200'>Pelanggan <?php echo form_error('id_pelanggan') ?></td>
+						<td width='200'>Pelanggan1 <?php echo form_error('id_pelanggan') ?></td>
 						<td><select class="form-control" name="id_pelanggan" id="id_pelanggan">
 								<option value=''>-- Pilih --</option>
 								<?php foreach ($pelanggan as $rows) { ?>

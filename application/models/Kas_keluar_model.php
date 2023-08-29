@@ -20,6 +20,7 @@ class Kas_keluar_model extends CI_Model
     function get_all()
     {
         $this->db->order_by($this->id, $this->order);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         $this->db->where($this->jenis, 'Keluar');
         return $this->db->get($this->table)->result();
     }
@@ -34,13 +35,9 @@ class Kas_keluar_model extends CI_Model
     // get total rows
     function total_rows($q = NULL)
     {
-        $this->db->like('id_km', $q);
-        $this->db->or_like('tgl_km', $q);
-        $this->db->or_like('uraian_km', $q);
-        $this->db->or_like('masuk', $q);
-        $this->db->or_like('keluar', $q);
-        $this->db->or_like('jenis', $q);
+        $this->db->like('cara_bayar', $q);
         $this->db->from($this->table);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         return $this->db->count_all_results();
     }
 
@@ -48,14 +45,10 @@ class Kas_keluar_model extends CI_Model
     function get_limit_data($limit, $start = 0, $q = NULL)
     {
         $this->db->order_by($this->id, $this->order);
-        //        $this->db->like('id_km', $q);
-        // $this->db->or_like('tgl_km', $q);
-        // $this->db->or_like('uraian_km', $q);
-        // $this->db->or_like('masuk', $q);
-        // $this->db->or_like('keluar', $q);
-        // $this->db->or_like('jenis', $q);
+        $this->db->or_like('cara_bayar', $q);
         $this->db->where('jenis', 'Keluar');
         $this->db->limit($limit, $start);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         return $this->db->get($this->table)->result();
     }
 
@@ -77,6 +70,20 @@ class Kas_keluar_model extends CI_Model
     {
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
+    }
+    public function total_keluar()
+    {
+        $this->db->select_sum('keluar');
+        $this->db->where($this->jenis, 'Keluar');
+        return $this->db->get($this->table)->row();
+    }
+    public function total_keluar_per($tgl1, $tgl2)
+    {
+        $this->db->select_sum('keluar');
+        // $this->db->where($this->jenis, 'Keluar' and 'tgl_km BETWEEN' . $tgl1 . 'AND' . $tgl2);
+        $this->db->where($this->jenis, 'Keluar');
+        $this->db->where('tgl_km BETWEEN "' . $tgl1 . '" AND "' . $tgl2 . '"');
+        return $this->db->get($this->table)->row();
     }
 }
 

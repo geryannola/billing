@@ -19,6 +19,7 @@ class Rekap_kas_model extends CI_Model
     function get_all()
     {
         $this->db->order_by($this->id, $this->order);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         return $this->db->get($this->table)->result();
     }
 
@@ -38,6 +39,8 @@ class Rekap_kas_model extends CI_Model
         $this->db->or_like('masuk', $q);
         $this->db->or_like('keluar', $q);
         $this->db->or_like('jenis', $q);
+        $this->db->or_like('cara_bayar', $q);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         $this->db->from($this->table);
         return $this->db->count_all_results();
     }
@@ -52,6 +55,8 @@ class Rekap_kas_model extends CI_Model
         $this->db->or_like('masuk', $q);
         $this->db->or_like('keluar', $q);
         $this->db->or_like('jenis', $q);
+        $this->db->or_like('cara_bayar', $q);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
         $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }
@@ -75,7 +80,16 @@ class Rekap_kas_model extends CI_Model
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }
+    function get_per($tgl1, $tgl2)
+    {
+        $this->db->order_by($this->id, $this->order);
+        $this->db->join('cara_bayar', 'cara_bayar.id_cara_bayar = kas_masuk.id_cara_bayar');
+        $this->db->where('tgl_km BETWEEN "' . $tgl1 . '" AND "' . $tgl2 . '"');
+        // $this->db->where($this->jenis, 'Masuk' and 'tgl_km' BETWEEN' . $tgl1 . 'AND' . $tgl2);
+        return $this->db->get($this->table)->result();
+    }
 }
+// $this->db->where('sell_date BETWEEN "' . date('Y-m-d', strtotime($start_date)) . '" and "' . date('Y-m-d', strtotime($end_date)) . '"');
 
 /* End of file Rekap_kas_masjid_model.php */
 /* Location: ./application/models/Rekap_kas_masjid_model.php */

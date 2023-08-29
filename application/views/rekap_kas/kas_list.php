@@ -2,22 +2,6 @@
     <section class="content">
         <div class="row">
             <div class="col-xs-12">
-                <?php
-                $koneksi = new mysqli("localhost", "root", "", "db-kas-abhostpot");
-                $sql = $koneksi->query("SELECT SUM(masuk) as tot_masuk  from kas_masuk where jenis='Masuk'");
-                while ($data = $sql->fetch_assoc()) {
-                    $masuk = $data['tot_masuk'];
-                }
-                ?>
-
-                <?php
-                $koneksi = new mysqli("localhost", "root", "", "db-kas-abhostpot");
-                $sql = $koneksi->query("SELECT SUM(keluar) as tot_keluar  from kas_masuk where jenis='Keluar'");
-                while ($data = $sql->fetch_assoc()) {
-                    $keluar = $data['tot_keluar'];
-                }
-                ?>
-
                 <div class="alert alert-info alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h5>
@@ -25,20 +9,20 @@
                     </h5>
                     <h5>Pemasukan :
                         <?php
-                        echo 'Rp. ' . number_format($masuk);
+                        echo 'Rp. ' . number_format($total_masuk);
                         ?>
                     </h5>
 
                     <h5>Pengeluaran :
                         <?php
-                        echo 'Rp. ' . number_format($keluar);
+                        echo 'Rp. ' . number_format($total_keluar);
                         ?>
                     </h5>
                     <hr>
 
                     <h3>Saldo Akhir :
                         <?php
-                        $saldo = $masuk - $keluar;
+                        $saldo = $total_masuk - $total_keluar;
                         echo 'Rp. ' . number_format($saldo);
                         ?>
                     </h3>
@@ -97,6 +81,7 @@
                                     <th>Masuk</th>
                                     <th>Keluar</th>
                                     <th>Jenis</th>
+                                    <th>Cara Bayar</th>
                                     <th>Action</th>
                                 </tr><?php
                                         foreach ($rekap_kas_data as $rekap_kas) {
@@ -108,6 +93,7 @@
                                         <td align="right"><?php echo number_format($rekap_kas->masuk) ?></td>
                                         <td align="right"><?php echo number_format($rekap_kas->keluar) ?></td>
                                         <td><?php echo $rekap_kas->jenis ?></td>
+                                        <td><?php echo $rekap_kas->cara_bayar ?></td>
                                         <td style="text-align:center" width="200px">
                                             <?php
                                             echo anchor(site_url('rekap_kas/read/' . $rekap_kas->id_km), '<i class="fa fa-eye" aria-hidden="true"></i>', 'class="btn btn-success btn-sm"');

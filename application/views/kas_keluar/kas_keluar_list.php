@@ -7,17 +7,10 @@
                     <h5>
                         <i class="icon fa fa-info"></i> Total Pengeluaran
                     </h5>
-                    <?php
-                    $koneksi = new mysqli("localhost", "root", "", "db-kas-abhostpot");
-                    $sql = $koneksi->query("SELECT SUM(keluar) as tot_masuk  from kas_masuk where jenis='Keluar'");
-                    while ($data = $sql->fetch_assoc()) {
-                    ?>
-                        <h2>
-                            <?php echo 'Rp. ' . number_format($data['tot_masuk']); ?>
-                        </h2>
-                    <?php
-                    }
-                    ?>
+
+                    <h2>
+                        <?php echo 'Rp. ' . number_format($total_keluar); ?>
+                    </h2>
                 </div>
                 <div class="box-header">
                     <h3 class="box-title">KELOLA DATA KAS</h3>
@@ -70,6 +63,7 @@
                                     <th>Tgl Km</th>
                                     <th>Uraian Pengeluaran</th>
                                     <th>Keluar</th>
+                                    <th>Cara Bayar</th>
                                     <th>Action</th>
                                 </tr><?php
                                         foreach ($kas_keluar_data as $kas_keluar) {
@@ -79,6 +73,7 @@
                                         <td><?php echo $kas_keluar->tgl_km ?></td>
                                         <td><?php echo $kas_keluar->uraian_km ?></td>
                                         <td><?php echo number_format($kas_keluar->keluar) ?></td>
+                                        <td><?php echo $kas_keluar->cara_bayar ?></td>
                                         <td style="text-align:center" width="200px">
                                             <?php
                                             echo anchor(site_url('kas_keluar/read/' . $kas_keluar->id_km), '<i class="fa fa-eye" aria-hidden="true"></i>', 'class="btn btn-success btn-sm"');

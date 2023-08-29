@@ -13,6 +13,8 @@ class Pelanggan extends CI_Controller
         $this->load->model('Pelanggan_model');
         $this->load->model('Cabang_model');
         $this->load->model('Paket_model');
+        $this->load->model('Whatsapp_model');
+        $this->load->model('Users_model');
         $this->load->library('form_validation');
     }
 
@@ -22,8 +24,8 @@ class Pelanggan extends CI_Controller
         $start = intval($this->uri->segment(3));
 
         if ($q <> '') {
-            $config['base_url'] = base_url() . '.php/c_url/index.html?q=' . urlencode($q);
-            $config['first_url'] = base_url() . 'index.php/pelanggan/index.html?q=' . urlencode($q);
+            $config['base_url'] = base_url() . 'index.php/pelanggan/index?q=' . urlencode($q);
+            $config['first_url'] = base_url() . 'index.php/pelanggan/index?q=' . urlencode($q);
         } else {
             $config['base_url'] = base_url() . 'index.php/pelanggan/index/';
             $config['first_url'] = base_url() . 'index.php/pelanggan/index/';
@@ -64,7 +66,7 @@ class Pelanggan extends CI_Controller
                 'r_password' => $row->r_password,
                 'tgl_mulai' => $row->tgl_mulai,
                 'cabang' => $row->cabang,
-                'nama_paket' => $row->cabang,
+                'nama_paket' => $row->nama_paket,
             );
             $this->template->load('template', 'pelanggan/pelanggan_read', $data);
         } else {
@@ -72,6 +74,51 @@ class Pelanggan extends CI_Controller
             redirect(site_url('pelanggan'));
         }
     }
+    public function rincian($id)
+    {
+        $q = urldecode($this->input->get('q', TRUE));
+        $start = intval($this->uri->segment(3));
+
+        if ($q <> '') {
+            $config['base_url'] = base_url() . 'index.php/pelanggan/rincian.html?q=' . urlencode($q);
+            $config['first_url'] = base_url() . 'index.php/pelanggan/rincian.html?q=' . urlencode($q);
+        } else {
+            $config['base_url'] = base_url() . 'index.php/pelanggan/rincian/';
+            $config['first_url'] = base_url() . 'index.php/pelanggan/rincian/';
+        }
+
+        $config['per_page'] = 30;
+        $config['page_query_string'] = FALSE;
+        $config['total_rows'] = $this->Pelanggan_model->total_rows($id, $q);
+        $riwayat = $this->Pelanggan_model->get_limit_riwayat($id);
+        $row = $this->Pelanggan_model->get_by_id_rincian($id);
+        $config['full_tag_open'] = '<ul class="pagination pagination-sm no-margin pull-right">';
+        $config['full_tag_close'] = '</ul>';
+        $this->load->library('pagination');
+        $this->pagination->initialize($config);
+
+        $data = array(
+            'id_pelanggan' => $row->id_pelanggan,
+            'nama_pelanggan' => $row->nama_pelanggan,
+            'alamat' => $row->alamat,
+            'no_wa' => $row->no_wa,
+            'ip' => $row->ip,
+            'username' => $row->username,
+            'password' => $row->password,
+            'r_wifi' => $row->r_wifi,
+            'r_password' => $row->r_password,
+            'tgl_mulai' => $row->tgl_mulai,
+            'cabang' => $row->cabang,
+            'nama_paket' => $row->nama_paket,
+            'riwayat_data' => $riwayat,
+            'q' => $q,
+            'pagination' => $this->pagination->create_links(),
+            'total_rows' => $config['total_rows'],
+            'start' => $start,
+        );
+        $this->template->load('template', 'pelanggan/pelanggan_rincian', $data);
+    }
+
 
     public function create()
     {
@@ -89,6 +136,7 @@ class Pelanggan extends CI_Controller
             'r_password' => set_value('r_password'),
             'tgl_mulai' => set_value('tgl_mulai'),
             'id_cabang' => set_value('id_cabang'),
+            'id_user' => set_value('id_user'),
         );
         $data['cabang'] = $this->Cabang_model->tampil_cabang();
         $data['paket'] = $this->Paket_model->tampil_paket();
@@ -102,6 +150,23 @@ class Pelanggan extends CI_Controller
         if ($this->form_validation->run() == FALSE) {
             $this->create();
         } else {
+            $dataUser = array(
+                'username' => $this->input->post('username', TRUE),
+                // 'password' => $this->input->post('password',TRUE),
+                'password'      => md5($this->input->post('password', true)),
+                'nama' => $this->input->post('nama_pelanggan', TRUE),
+                'email' => $this->input->post('username', TRUE),
+                'alamat' => $this->input->post('alamat', TRUE),
+                'kota' => 'Maros',
+                'provinsi' => 'Sulsel',
+                'telepon' => $this->input->post('no_wa', TRUE),
+                'id_level' => 3,
+                'is_aktive' => $this->input->post('is_aktive', TRUE),
+                'create_date' => date('y-m-d H:i:s')
+            );
+            $this->Users_model->insert($dataUser);
+            $id_user = $this->db->insert_id();
+
             $data = array(
                 'nama_pelanggan' => $this->input->post('nama_pelanggan', TRUE),
                 'alamat' => $this->input->post('alamat', TRUE),
@@ -114,11 +179,42 @@ class Pelanggan extends CI_Controller
                 'tgl_mulai' => $this->input->post('tgl_mulai', TRUE),
                 'id_cabang' => $this->input->post('id_cabang', TRUE),
                 'id_paket' => $this->input->post('id_paket', TRUE),
+                'id_user' => $id_user,
                 'is_aktive' => $this->input->post('is_aktive', TRUE),
                 'create_date' => date('y-m-d H:i:s')
             );
-
             $this->Pelanggan_model->insert($data);
+
+            $nama_pelanggan = $this->input->post('nama_pelanggan', TRUE);
+            $alamat = $this->input->post('alamat', TRUE);
+            $no_wa = $this->input->post('no_wa', TRUE);
+            $username = $this->input->post('username', TRUE);
+            $password = $this->input->post('password', TRUE);
+            $tgl_mulai = $this->input->post('tgl_mulai', TRUE);
+            $id_paket = $this->input->post('id_paket', TRUE);
+            $row = $this->Paket_model->get_by_id($id_paket);
+            $nama_paket = $row->nama_paket;
+            $harga_paket = number_format($row->harga_paket);
+
+            if (!preg_match("/[^+0-9]/", trim($no_wa))) {
+                // cek apakah no hp karakter ke 1 dan 2 adalah angka 62
+                if (substr(trim($no_wa), 0, 2) == "62") {
+                    $hp    = trim($no_wa);
+                }
+                // cek apakah no hp karakter ke 1 adalah angka 0
+                else if (substr(trim($no_wa), 0, 1) == "0") {
+                    $hp    = "62" . substr(trim($no_wa), 1);
+                }
+            }
+            $message = 'Selamat Pagi Bapak/Ibu \nIni Adalah WhatsApp notifikasi ABhostpot.\n\nSebelumnya kami ucapkan terima kasih atas kepercayaan yang Anda berikan dengan memilih ABhostpot sebagai Internet Rumah Anda \n\nKami Sampaikan bahwa Akun Internet Aktif sejak ' . $tgl_mulai . '. Informasi Mengenai Pelanggan Sebagai Berikut :\n 1. Nama : ' . $nama_pelanggan . ' \n 2. Alamat : ' . $alamat . ' \n 3. Nomo HP/WA : ' . $no_wa . ' \n 4. Username : ' . $username . ' \n 5. Password : ' . $password . '  \n 6. Jenis Paket : ' . $nama_paket . ' \n 7. Harga Paket : ' . $harga_paket . '\n\n Jika Anda memiliki kendala dan membutuhkan informasi lebih lanjut dalam layanan ABhostpot, dapat menghubungi wa.me/6281355071767 \n Cek Tagihan : https://billingabhostpot.abkreatorpratama.com Dengan Username dan password di atas\n\nhttp://abhostpot.com/login?\n \n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem, mohon untuk tidak dibalas*';
+            $data_wa = array(
+                'phonenumber' => $hp,
+                'message' => $message,
+                'url' => whatsapp_url(),
+                'link' => "/send-message",
+            );
+            $this->Whatsapp_model->whatsapp($data_wa);
+
             $this->session->set_flashdata('message', 'Create Record Success 2');
             redirect(site_url('pelanggan'));
         }
@@ -144,11 +240,12 @@ class Pelanggan extends CI_Controller
                 'tgl_mulai' => set_value('tgl_mulai', $row->tgl_mulai),
                 'id_cabang' => set_value('id_cabang', $row->id_cabang),
                 'id_paket' => set_value('id_paket', $row->id_paket),
+                'id_user' => set_value('id_paket', $row->id_user),
                 'is_aktive' => set_value('is_aktive', $row->is_aktive),
             );
             $data['cabang'] = $this->Cabang_model->tampil_cabang();
             $data['paket'] = $this->Paket_model->tampil_paket();
-            $data['data_pelanggan'] = $this->Pelanggan_model->edit_data($id);
+            // $data['data_pelanggan'] = $this->Pelanggan_model->edit_data($id);
 
             $this->template->load('template', 'pelanggan/pelanggan_form', $data);
         } else {
@@ -164,6 +261,52 @@ class Pelanggan extends CI_Controller
         if ($this->form_validation->run() == FALSE) {
             $this->update($this->input->post('id_pelanggan', TRUE));
         } else {
+
+            $id_user = $this->input->post('id_user', TRUE);
+            $nama_pelanggan = $this->input->post('nama_pelanggan', TRUE);
+            $alamat = $this->input->post('alamat', TRUE);
+            $no_wa = $this->input->post('no_wa', TRUE);
+            $username = $this->input->post('username', TRUE);
+            $password = $this->input->post('password', TRUE);
+            $tgl_mulai = $this->input->post('tgl_mulai', TRUE);
+            $id_paket = $this->input->post('id_paket', TRUE);
+            $is_aktive = $this->input->post('is_aktive', TRUE);
+            $row = $this->Paket_model->get_by_id($id_paket);
+            if ($id_user == 0) {
+                $dataUser = array(
+                    'username' => $this->input->post('username', TRUE),
+                    // 'password' => $this->input->post('password',TRUE),
+                    'password'      => md5($this->input->post('password', true)),
+                    'nama' => $this->input->post('nama_pelanggan', TRUE),
+                    'email' => $this->input->post('username', TRUE),
+                    'alamat' => $this->input->post('alamat', TRUE),
+                    'kota' => 'Maros',
+                    'provinsi' => 'Sulsel',
+                    'telepon' => $this->input->post('no_wa', TRUE),
+                    'id_level' => 3,
+                    'is_aktive' => $this->input->post('is_aktive', TRUE),
+                    'create_date' => date('y-m-d H:i:s')
+                );
+                $this->Users_model->insert($dataUser);
+                $id_user = $this->db->insert_id();
+            } else {
+                $dataUser = array(
+                    'username' => $this->input->post('username', TRUE),
+                    // 'password' => $this->input->post('password',TRUE),
+                    'password'      => md5($this->input->post('password', true)),
+                    'nama' => $this->input->post('nama_pelanggan', TRUE),
+                    'email' => $this->input->post('username', TRUE),
+                    'alamat' => $this->input->post('alamat', TRUE),
+                    'kota' => 'Maros',
+                    'provinsi' => 'Sulsel',
+                    'telepon' => $this->input->post('no_wa', TRUE),
+                    'id_level' => '3',
+                    'is_aktive' => $this->input->post('is_aktive', TRUE),
+                    'create_date' => date('y-m-d H:i:s')
+                );
+                $this->Users_model->update($this->input->post('id_user', TRUE), $dataUser);
+            }
+
             $data = array(
                 'nama_pelanggan' => $this->input->post('nama_pelanggan', TRUE),
                 'alamat' => $this->input->post('alamat', TRUE),
@@ -175,11 +318,47 @@ class Pelanggan extends CI_Controller
                 'r_password' => $this->input->post('r_password', TRUE),
                 'id_cabang' => $this->input->post('id_cabang', TRUE),
                 'id_paket' => $this->input->post('id_paket', TRUE),
+                'id_user' => $id_user,
                 'tgl_mulai' => $this->input->post('tgl_mulai', TRUE),
                 'is_aktive' => $this->input->post('is_aktive', TRUE),
             );
-
             $this->Pelanggan_model->update($this->input->post('id_pelanggan', TRUE), $data);
+
+            $nama_paket = $row->nama_paket;
+            $sekarang = date('Y-m-d');
+            $harga_paket = number_format($row->harga_paket);
+
+            if (!preg_match("/[^+0-9]/", trim($no_wa))) {
+                // cek apakah no hp karakter ke 1 dan 2 adalah angka 62
+                if (substr(trim($no_wa), 0, 2) == "62") {
+                    $hp    = trim($no_wa);
+                }
+                // cek apakah no hp karakter ke 1 adalah angka 0
+                else if (substr(trim($no_wa), 0, 1) == "0") {
+                    $hp    = "62" . substr(trim($no_wa), 1);
+                }
+            }
+
+            if ($is_aktive == 1) {
+                $message = 'Selamat Pagi Bapak/Ibu \nIni Adalah WhatsApp notifikasi Update Data ABhostpot.\n\nSebelumnya kami ucapkan terima kasih atas kepercayaan yang Anda berikan dengan telah berlangganan ABhostpot sebagai Internet Rumah Anda \n\nKami Sampaikan bahwa Akun Internet Sudah *AKTIF*  sejak ' . $tgl_mulai . '. Informasi Mengenai Pelanggan Sebagai Berikut :\n 1. Nama : ' . $nama_pelanggan . ' \n 2. Alamat : ' . $alamat . ' \n 3. Nomo HP/WA : ' . $no_wa . ' \n 4. Username : ' . $username . ' \n 5. Password : ' . $password . '  \n 6. Jenis Paket : ' . $nama_paket . ' \n 7. Harga Paket : ' . $harga_paket . '\n\n Jka Anda memiliki kendala dan membutuhkan informasi lebih lanjut dalam layanan ABhostpot, dapat menghubungi wa.me/6281355071767 atau https://billingabhostpot.abkreatorpratama.com\r\nhttp://abhostpot.com/login?\n \n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem, mohon untuk tidak dibalas*';
+                $data_wa = array(
+                    'phonenumber' => $hp,
+                    'message' => $message,
+                    'url' => whatsapp_url(),
+                    'link' => "/send-message",
+                );
+                $this->Whatsapp_model->whatsapp($data_wa);
+            } else {
+                $message = 'Selamat Pagi  Bapak/Ibu \nIni Adalah WhatsApp notifikasi Update Data ABhostpot.\n\nSebelumnya kami ucapkan terima kasih atas kepercayaan yang Anda berikan dengan memilih ABhostpot sebagai Internet Rumah Anda \n\nKami Sampaikan bahwa Akun Internet *NONAKTIF* sejak ' . $sekarang . '. \n\n Jka Anda memiliki kendala dan membutuhkan informasi lebih lanjut dalam layanan ABhostpot, dapat menghubungi wa.me/6281355071767\n \n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem, mohon untuk tidak dibalas*';
+                $data_wa = array(
+                    'phonenumber' => $hp,
+                    'message' => $message,
+                    'url' => whatsapp_url(),
+                    'link' => "/send-message",
+                );
+                $this->Whatsapp_model->whatsapp($data_wa);
+            }
+
             $this->session->set_flashdata('message', 'Update Record Success');
             redirect(site_url('pelanggan'));
         }
@@ -188,9 +367,32 @@ class Pelanggan extends CI_Controller
     public function delete($id)
     {
         $row = $this->Pelanggan_model->get_by_id($id);
-
+        var_dump($row);
+        // die();
         if ($row) {
-            $this->Pelanggan_model->delete($id);
+            $nama_pelanggan = $row->nama_pelanggan;
+            $alamat = $row->alamat;
+            $no_wa = $row->no_wa;
+            $username = $row->username;
+            $password = $row->password;
+
+            $message = 'Informasi Data Pelanggan Delete \n 1. Nama : ' . $nama_pelanggan . ' \n 2. Alamat : ' . $alamat . ' \n 3. Nomo HP/WA : ' . $no_wa . '\n 4. Username : ' . $username . ' \n 5. Password : ' . $password;
+
+            $data_wa = array(
+                'phonenumber' => '6281355071767',
+                'message' => $message,
+                'url' => whatsapp_url(),
+                'link' => "/send-message",
+            );
+
+            $this->Whatsapp_model->whatsapp($data_wa);
+            var_dump($row->id_user);
+            // die();
+            if ($row->id_user != "") {
+                $this->Users_model->delete($row->id_user);
+            }
+
+            // $this->Pelanggan_model->delete($id);
             $this->session->set_flashdata('message', 'Delete Record Success');
             redirect(site_url('pelanggan'));
         } else {
@@ -241,10 +443,16 @@ class Pelanggan extends CI_Controller
         xlsWriteLabel($tablehead, $kolomhead++, "No");
         xlsWriteLabel($tablehead, $kolomhead++, "Nama Pelanggan");
         xlsWriteLabel($tablehead, $kolomhead++, "Alamat");
+        xlsWriteLabel($tablehead, $kolomhead++, "No Hp/WA");
         xlsWriteLabel($tablehead, $kolomhead++, "IP");
-        xlsWriteLabel($tablehead, $kolomhead++, "Nama Wifi");
+        xlsWriteLabel($tablehead, $kolomhead++, "Username");
         xlsWriteLabel($tablehead, $kolomhead++, "Password");
+        xlsWriteLabel($tablehead, $kolomhead++, "Nama Wifi");
+        xlsWriteLabel($tablehead, $kolomhead++, "Password Wifi");
         xlsWriteLabel($tablehead, $kolomhead++, "Tgl Mulai");
+        xlsWriteLabel($tablehead, $kolomhead++, "Cabang");
+        xlsWriteLabel($tablehead, $kolomhead++, "Paket");
+        xlsWriteLabel($tablehead, $kolomhead++, "is_aktive");
 
         foreach ($this->Pelanggan_model->get_all() as $data) {
             $kolombody = 0;
@@ -253,10 +461,16 @@ class Pelanggan extends CI_Controller
             xlsWriteNumber($tablebody, $kolombody++, $nourut);
             xlsWriteLabel($tablebody, $kolombody++, $data->nama_pelanggan);
             xlsWriteLabel($tablebody, $kolombody++, $data->alamat);
+            xlsWriteLabel($tablebody, $kolombody++, $data->no_wa);
             xlsWriteLabel($tablebody, $kolombody++, $data->ip);
-            xlsWriteLabel($tablebody, $kolombody++, $data->wifi);
+            xlsWriteLabel($tablebody, $kolombody++, $data->username);
             xlsWriteLabel($tablebody, $kolombody++, $data->password);
+            xlsWriteLabel($tablebody, $kolombody++, $data->r_wifi);
+            xlsWriteLabel($tablebody, $kolombody++, $data->r_password);
             xlsWriteLabel($tablebody, $kolombody++, $data->tgl_mulai);
+            xlsWriteLabel($tablebody, $kolombody++, $data->cabang);
+            xlsWriteLabel($tablebody, $kolombody++, $data->nama_paket);
+            xlsWriteLabel($tablebody, $kolombody++, $data->is_aktive);
 
             $tablebody++;
             $nourut++;

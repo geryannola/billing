@@ -7,16 +7,9 @@
                     <h5>
                         <i class="icon fa fa-info"></i> Total Pemasukan
                     </h5>
-                    <?php
-                    $koneksi = new mysqli("localhost", "root", "", "db-kas-abhostpot");
-                    $sql = $koneksi->query("SELECT SUM(masuk) as tot_masuk  from kas_masuk where jenis='Masuk'");
-                    while ($data = $sql->fetch_assoc()) {
-                    ?>
-                        <h2>
-                        <?php echo 'Rp. ' . number_format($data['tot_masuk']);
-                    } ?>
-                        </h2>
-
+                    <h2>
+                        <?php echo 'Rp. ' . number_format($total_masuk); ?>
+                    </h2>
                 </div>
                 <div class="box-header">
                     <h3 class="box-title">KELOLA DATA</h3>
@@ -69,6 +62,7 @@
                                     <th>Tgl Km</th>
                                     <th>Uraian Pemasukan</th>
                                     <th>Masuk</th>
+                                    <th>Cara Bayar</th>
                                     <th>Action</th>
                                 </tr><?php
                                         foreach ($kas_masuk_data as $kas_masuk) {
@@ -78,6 +72,7 @@
                                         <td><?php echo $kas_masuk->tgl_km ?></td>
                                         <td><?php echo $kas_masuk->uraian_km ?></td>
                                         <td align="right"><?php echo number_format($kas_masuk->masuk) ?></td>
+                                        <td><?php echo $kas_masuk->cara_bayar ?></td>
                                         <td style="text-align:center" width="200px">
                                             <?php
                                             echo anchor(site_url('kas_masuk/read/' . $kas_masuk->id_km), '<i class="fa fa-eye" aria-hidden="true"></i>', 'class="btn btn-success btn-sm"');

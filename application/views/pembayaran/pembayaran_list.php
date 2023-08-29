@@ -15,16 +15,14 @@
                 <div class="box-header">
                     <h3 class="box-title">KELOLA DATA</h3>
                 </div>
-
                 <div class="box-body">
                     <div class='row'>
                         <div class='col-md-9'>
                             <div style="padding-bottom: 10px;"'>
-        <?php echo anchor(site_url('tagihan/create'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Tambah Data', 'class="btn btn-danger btn-sm"'); ?>
-        <?php echo anchor(site_url('tagihan/create_all'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Tambah Data Sekaligus', 'class="btn btn-danger btn-sm"'); ?>
-        <?php echo anchor(site_url('tagihan/notif_all'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Notifikasi Sekaligus', 'class="btn btn-danger btn-sm"'); ?>
-		<?php echo anchor(site_url('tagihan/excel'), '<i  class="fa fa-file-excel-o" aria-hidden="true"></i> Export Ms Excel', 'class="btn btn-success btn-sm"'); ?>
-		<?php echo anchor(site_url('tagihan/word'), '<i class="fa fa-file-word-o" aria-hidden="true"></i> Export Ms Word', 'class="btn btn-primary btn-sm"'); ?></div>
+        <!-- <?php echo anchor(site_url('tagihan/create'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Tambah Data', 'class="btn btn-danger btn-sm"'); ?> -->
+        <!-- <?php echo anchor(site_url('tagihan/create_all'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Tambah Data Sekaligus', 'class="btn btn-danger btn-sm"'); ?> -->
+		<!-- <?php echo anchor(site_url('tagihan/excel'), '<i  class="fa fa-file-excel-o" aria-hidden="true"></i> Export Ms Excel', 'class="btn btn-success btn-sm"'); ?> -->
+		<!-- <?php echo anchor(site_url('tagihan/word'), '<i class="fa fa-file-word-o" aria-hidden="true"></i> Export Ms Word', 'class="btn btn-primary btn-sm"'); ?></div> -->
             </div>
             <div class=' col-md-3'>
                                 <form action="<?php echo site_url('tagihan/index'); ?>" class="form-inline" method="get">
@@ -62,33 +60,26 @@
                             <table class="table table-bordered" style="margin-bottom: 10px">
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Pelanggan</th>
-                                    <th>Cabang</th>
                                     <th>Bulan</th>
                                     <th>Tahun</th>
                                     <th>Jumlah Tagihan</th>
+                                    <th>Status Pembayaran</th>
                                     <th>Notif</th>
-                                    <th>Action</th>
                                 </tr><?php
-                                        foreach ($tagihan_data as $tagihan) {
+                                        foreach ($pembayaran_data as $tagihan) {
+                                            if ($tagihan->status_bayar == 'Y') {
+                                                $status = "Lunas - (" . $tagihan->tgl_bayar . ")";
+                                            } else {
+                                                $status = "Belum Lunas";
+                                            }
                                         ?>
                                     <tr>
                                         <td width="10px"><?php echo ++$start ?></td>
-                                        <td><?php echo $tagihan->nama_pelanggan ?></td>
-                                        <td><?php echo $tagihan->cabang ?></td>
                                         <td><?php echo $tagihan->nama_bulan ?></td>
                                         <td><?php echo $tagihan->tahun ?></td>
                                         <td><?php echo number_format($tagihan->jml_tagihan) ?></td>
+                                        <td><?php echo $status ?></td>
                                         <td><?php echo $tagihan->notif_kirim ?></td>
-                                        <td style="text-align:center" width="200px">
-                                            <?php
-                                            echo anchor(site_url('tagihan/notif/' . $tagihan->id_tagihan), '<i class="fa fa-bell" aria-hidden="true"></i>', 'class="btn btn-primary btn-sm"');
-                                            echo '  ';
-                                            echo anchor(site_url('tagihan/bayar/' . $tagihan->id_tagihan), '<i class="fa fa-money" aria-hidden="true"></i>', 'class="btn btn-success btn-sm"');
-                                            echo '  ';
-                                            echo anchor(site_url('tagihan/delete/' . $tagihan->id_tagihan), '<i class="fa fa-trash-o" aria-hidden="true"></i>', 'class="btn btn-danger btn-sm" Delete', 'onclick="javasciprt: return confirm(\'Are You Sure ?\')"');
-                                            ?>
-                                        </td>
                                     </tr>
                                 <?php
                                         }
