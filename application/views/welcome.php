@@ -1,8 +1,4 @@
-<?php
-// var_dump($resulthostpotuser['name']);
-// var_dump($hostpotuser);
-// var_dump($hostpotaktive);
-?>
+
 <div class="alert alert-info alert-dismissible">
   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <marquee direction="left" scrollamount="6" align="center">
