@@ -353,27 +353,14 @@
 							<span class="menu-text">
 								Pembayaran
 							</span>
-
-							<!-- <b class="arrow fa fa-angle-down"></b> -->
 						</a>
-
 						<b class="arrow"></b>
-
-						<!-- <ul class="submenu">
-							<li class="">
-								<a href="<?php echo base_url() ?>pembayaran">
-									<i class="menu-icon fa fa-caret-right"></i>
-									Pembayaran
-								</a>
-								<b class="arrow"></b>
-							</li>
-						</ul> -->
 					</li>
 					<li class="">
-						<a href="<?php echo base_url() ?>pelanggan/ticket">
+						<a href="<?php echo base_url() ?>pelanggan/supporttickets">
 							<i class="menu-icon fa fa-bell"></i>
 							<span class="menu-text">
-								Pembayaran
+								Support
 							</span>
 
 							<!-- <b class="arrow fa fa-angle-down"></b> -->

@@ -23,12 +23,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-<<<<<<< HEAD
 $config['base_url'] = 'http://localhost/2024/ci/billing-abhostpot';
-=======
-//$config['base_url'] = 'http://localhost/2022/ci/billing_abhotspot';
-$config['base_url'] = 'https://billing.abkreator.com/';
->>>>>>> 811ca6ffc8f076c5b79f1443698b797b31b94f30
 
 /*
 |--------------------------------------------------------------------------
@@ -212,7 +207,6 @@ $config['allow_get_array'] = TRUE;
 |--------------------------------------------------------------------------
 |
 | You can enable error logging by setting a threshold over zero. The
-<<<<<<< HEAD
 | threshold determines what gets logged. Threshold options are:
 |
 |	0 = Disables logging, Error logging TURNED OFF
@@ -527,6 +521,3 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
-=======
-| threshold determines what gets logged. Threshold option
->>>>>>> 811ca6ffc8f076c5b79f1443698b797b31b94f30
