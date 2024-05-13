@@ -89,7 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('form', 'url', 'html', 'fungsi', 'whatsapp_url', 'ip_mikrotik');
+$autoload['helper'] = array('form', 'url', 'html', 'fungsi', 'whatsapp_url', 'ip_mikrotik', 'formatUptime');
 
 /*
 | -------------------------------------------------------------------

@@ -25,12 +25,6 @@
 				<span class="sr-only">Toggle sidebar</span>
 
 				<span class="icon-bar"></span>
-
-
-
-
-
-
 				<span class="icon-bar"></span>
 
 				<span class="icon-bar"></span>
@@ -101,15 +95,16 @@
 				} catch (e) {}
 			</script>
 			<ul class="nav nav-list">
-				<li class="">
-					<a href="<?php echo base_url() ?>home">
-						<i class="menu-icon fa fa-tachometer"></i>
-						<span class="menu-text"> Dashboard </span>
-					</a>
-
-					<b class="arrow"></b>
-				</li>
+				<!-- ADMINISTRATOR -->
 				<?php if ($this->session->userdata('level') == 1) { ?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/administartor">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
 					<li class="">
 						<a href="" class="dropdown-toggle">
 							<i class="menu-icon fa fa-bell"></i>
@@ -124,9 +119,45 @@
 
 						<ul class="submenu">
 							<li class="">
-								<a href="<?php echo base_url() ?>Dashboard">
+								<a href="<?php echo base_url() ?>mikrotik/mikrotik">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Router
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul>
+						<ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>mikrotik/hostpotProfile">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Hostpot Profile
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul>
+						<ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>mikrotik/hostpot">
 									<i class="menu-icon fa fa-caret-right"></i>
 									Hostpot
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul>
+						<ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>mikrotik/pppProfile">
+									<i class="menu-icon fa fa-caret-right"></i>
+									PPP Profile
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul>
+						<ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>mikrotik/ppp">
+									<i class="menu-icon fa fa-caret-right"></i>
+									PPP
 								</a>
 								<b class="arrow"></b>
 							</li>
@@ -227,8 +258,200 @@
 						<b class="arrow"></b>
 					</li>
 
+
 				<?php } elseif ($this->session->userdata('level') == 2) { ?>
-				<?php } elseif ($this->session->userdata('level') == 3) { ?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/sales">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+				<?php
+					// Sales
+				} elseif ($this->session->userdata('level') == 2) {
+				?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/teknisi">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+					<li class="">
+						<a href="<?php echo base_url() ?>pembayaran">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
+								Pembayaran
+							</span>
+
+							<!-- <b class="arrow fa fa-angle-down"></b> -->
+						</a>
+
+						<b class="arrow"></b>
+
+						<!-- <ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>pembayaran">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Pembayaran
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul> -->
+					</li>
+				<?php
+					// Teknisi
+				} elseif ($this->session->userdata('level') == 3) {
+				?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/teknisi">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+					<li class="">
+						<a href="<?php echo base_url() ?>pembayaran">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
+								Pembayaran
+							</span>
+
+							<!-- <b class="arrow fa fa-angle-down"></b> -->
+						</a>
+
+						<b class="arrow"></b>
+
+						<!-- <ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>pembayaran">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Pembayaran
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul> -->
+					</li>
+				<?php
+					// Pelanggan
+				} elseif ($this->session->userdata('level') == 4) {
+				?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/teknisi">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+						<b class="arrow"></b>
+					</li>
+					<li class="">
+						<a href="<?php echo base_url() ?>pembayaran">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
+								Pembayaran
+							</span>
+
+							<!-- <b class="arrow fa fa-angle-down"></b> -->
+						</a>
+
+						<b class="arrow"></b>
+
+						<!-- <ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>pembayaran">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Pembayaran
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul> -->
+					</li>
+					<li class="">
+						<a href="<?php echo base_url() ?>pelanggan/ticket">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
+								Pembayaran
+							</span>
+
+							<!-- <b class="arrow fa fa-angle-down"></b> -->
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+				<?php } elseif ($this->session->userdata('level') == 5) { ?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/teknisi">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+					<li class="">
+						<a href="<?php echo base_url() ?>pembayaran">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
+								Pembayaran
+							</span>
+
+							<!-- <b class="arrow fa fa-angle-down"></b> -->
+						</a>
+
+						<b class="arrow"></b>
+
+						<!-- <ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>pembayaran">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Pembayaran
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul> -->
+					</li>
+				<?php } elseif ($this->session->userdata('level') == 6) { ?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/teknisi">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+					<li class="">
+						<a href="<?php echo base_url() ?>pembayaran">
+							<i class="menu-icon fa fa-bell"></i>
+							<span class="menu-text">
+								Pembayaran
+							</span>
+
+							<!-- <b class="arrow fa fa-angle-down"></b> -->
+						</a>
+
+						<b class="arrow"></b>
+
+						<!-- <ul class="submenu">
+							<li class="">
+								<a href="<?php echo base_url() ?>pembayaran">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Pembayaran
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul> -->
+					</li>
+				<?php } elseif ($this->session->userdata('level') == 7) { ?>
+					<li class="">
+						<a href="<?php echo base_url() ?>dashboard/teknisi">
+							<i class="menu-icon fa fa-tachometer"></i>
+							<span class="menu-text"> Dashboard </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
 					<li class="">
 						<a href="<?php echo base_url() ?>pembayaran">
 							<i class="menu-icon fa fa-bell"></i>

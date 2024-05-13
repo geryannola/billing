@@ -5,26 +5,27 @@
 				<div class="box box-warning box-solid">
 
 					<div class="box-header">
-						<h3 class="box-title">KELOLA DATA USERS</h3>
+						<h3 class="box-title">KELOLA DATA HOSTPOT</h3>
 					</div>
 
 					<div class="box-body">
 						<div class='row'>
 							<div class='col-md-9'>
 								<div style="padding-bottom: 10px;"'>
-        <?php echo anchor(site_url('users/create'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Tambah Data', 'class="btn btn-danger btn-sm"'); ?>
-		<?php echo anchor(site_url('users/excel'), '<i class="fa fa-file-excel-o" aria-hidden="true"></i> Export Ms Excel', 'class="btn btn-success btn-sm"'); ?>
-		<?php echo anchor(site_url('users/word'), '<i class="fa fa-file-word-o" aria-hidden="true"></i> Export Ms Word', 'class="btn btn-primary btn-sm"'); ?></div>
+        <?php echo anchor(site_url('mikrotik/hostpot/create'), '<i class="fa fa-wpforms" aria-hidden="true"></i> Tambah Data', 'class="btn btn-danger btn-sm"'); ?>
+		<?php echo anchor(site_url('mikrotik/hostpot/active'), '<i class="fa fa-file-excel-o" aria-hidden="true"></i> Aktif', 'class="btn btn-success btn-sm"'); ?>
+		<!-- <?php echo anchor(site_url('mikrotik/hostpot/excel'), '<i class="fa fa-file-excel-o" aria-hidden="true"></i> Export Ms Excel', 'class="btn btn-success btn-sm"'); ?> -->
+	</div>
             </div>
             <div class=' col-md-3'>
-									<form action="<?php echo site_url('users/index'); ?>" class="form-inline" method="get">
+									<form action="<?php echo site_url('mikrotik/hostpot/index'); ?>" class="form-inline" method="get">
 										<div class="input-group">
 											<input type="text" class="form-control" name="q" value="<?php echo $q; ?>">
 											<span class="input-group-btn">
 												<?php
 												if ($q <> '') {
 												?>
-													<a href="<?php echo site_url('users'); ?>" class="btn btn-sm btn-default">Reset</a>
+													<a href="<?php echo site_url('mikrotik/hostpot'); ?>" class="btn btn-sm btn-default">Reset</a>
 												<?php
 												}
 												?>
@@ -52,38 +53,38 @@
 								<table class="table table-bordered" style="margin-bottom: 10px">
 									<tr>
 										<th>No</th>
-										<th>Username</th>
+										<th>Server</th>
 										<th>Nama</th>
-										<th>Email</th>
-										<th>Telepon</th>
-										<th>Status Level</th>
+										<th>Password</th>
+										<th>Profile</th>
+										<th>Disabled</th>
+										<th>Comment</th>
 										<th>Status Aktive</th>
-										<th>Create Date</th>
 										<th>Action</th>
 									</tr><?php
-											foreach ($users_data as $users) {
+											foreach ($hostpot_data as $route) {
 											?>
 										<tr>
 											<td width="10px"><?php echo ++$start ?></td>
-											<td><?php echo $users->username ?></td>
-											<td><?php echo $users->nama ?></td>
-											<td><?php echo $users->email ?></td>
-											<td><?php echo $users->telepon ?></td>
-											<td><?php echo $users->nama_user_level ?></td>
-											<?php if ($users->is_aktive == 1) { ?>
+											<td><?php echo $route->server ?></td>
+											<td><?php echo $route->name ?></td>
+											<td><?php echo $route->password ?></td>
+											<td><?php echo $route->profile ?></td>
+											<td><?php echo $route->disabled ?></td>
+											<td><?php echo $route->comment ?></td>
+											<?php if ($route->is_aktive == 1) { ?>
 												<td>Aktive</td>
 											<?php } else { ?>
 												<td>Non Aktive </td>
 											<?php } ?>
-											<td><?php echo $users->create_date ?></td>
 											<td style="text-align:center" width="200px">
 												<?php
-												echo anchor(site_url('users/read/' . $users->id_username), '<i class="fa fa-eye" aria-hidden="true"></i>', 'class="btn btn-success btn-sm"');
-												echo '  ';
-												echo anchor(site_url('users/update/' . $users->id_username), '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>', 'class="btn btn-primary btn-sm"');
+												// echo anchor(site_url('mikrotik/hostpot/read/' . $route->id_hostpot), '<i class="fa fa-refresh" aria-hidden="true"></i>', 'class="btn btn-success btn-sm"');
+												// echo '  ';
+												echo anchor(site_url('mikrotik/hostpot/update/' . $route->id_hostpot), '<i class="fa fa-pencil-square-o" aria-hidden="true"></i>', 'class="btn btn-primary btn-sm"');
 												echo '  ';
 												?>
-												<a href="users/delete/<?= $users->id_username; ?>" class="btn btn-danger btn-sm" onclick=" return confirm('Apakah Kamu Benar Menghapus')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+												<a href="hostpot/delete/<?= $route->id_hostpot; ?>" class="btn btn-danger btn-sm" onclick=" return confirm('Apakah Kamu Benar Menghapus')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 											</td>
 										</tr>
 									<?php
