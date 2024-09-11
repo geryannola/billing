@@ -145,36 +145,44 @@ class Tagihan_model extends CI_Model
         return $query;
     }
 
-    // CREATE
-    function create_package($package, $product)
-    {
-        $this->db->trans_start();
-        //INSERT TO PACKAGE
-        date_default_timezone_set("Asia/Bangkok");
-        $data  = array(
-            'package_name' => $package,
-            'package_created_at' => date('Y-m-d H:i:s')
-        );
-        $this->db->insert('package', $data);
-        //GET ID PACKAGE
-        $package_id = $this->db->insert_id();
-        $result = array();
-        foreach ($product as $key => $val) {
-            $result[] = array(
-                'detail_package_id'   => $package_id,
-                'detail_product_id'   => $_POST['product'][$key]
-            );
-        }
-        //MULTIPLE INSERT TO DETAIL TABLE
-        $this->db->insert_batch('detail', $result);
-        $this->db->trans_complete();
-    }
+    // // CREATE
+    // function create_package($package, $product)
+    // {
+    //     $this->db->trans_start();
+    //     //INSERT TO PACKAGE
+    //     date_default_timezone_set("Asia/Bangkok");
+    //     $data  = array(
+    //         'package_name' => $package,
+    //         'package_created_at' => date('Y-m-d H:i:s')
+    //     );
+    //     $this->db->insert('package', $data);
+    //     //GET ID PACKAGE
+    //     $package_id = $this->db->insert_id();
+    //     $result = array();
+    //     foreach ($product as $key => $val) {
+    //         $result[] = array(
+    //             'detail_package_id'   => $package_id,
+    //             'detail_product_id'   => $_POST['product'][$key]
+    //         );
+    //     }
+    //     //MULTIPLE INSERT TO DETAIL TABLE
+    //     $this->db->insert_batch('detail', $result);
+    //     $this->db->trans_complete();
+    // }
     public function total_tagihan()
     {
         $this->db->select_sum('jml_tagihan');
         $this->db->join('pelanggan', 'pelanggan.id_pelanggan = tagihan.id_pelanggan');
         $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
         $this->db->where('tagihan.status_bayar', 'N');
+        return $this->db->get($this->table)->row();
+    }
+    function get_by_qrXendit($id)
+    {
+        $this->db->join('pelanggan', 'pelanggan.id_pelanggan = tagihan.id_pelanggan');
+        $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
+        $this->db->join('bulan', 'bulan.id_bulan = tagihan.bulan');
+        $this->db->where('qr_xendit', $id);
         return $this->db->get($this->table)->row();
     }
 }

@@ -64,7 +64,7 @@ class Pelanggan_model extends CI_Model
         $this->db->like('id_pelanggan', $q);
         $this->db->or_like('nama_pelanggan', $q);
         $this->db->or_like('pelanggan.alamat', $q);
-        $this->db->or_like('cabang', $q);
+        $this->db->or_like('nama_cabang', $q);
         $this->db->or_like('nama_paket', $q);
         $this->db->from($this->table);
         $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
@@ -91,11 +91,12 @@ class Pelanggan_model extends CI_Model
         $this->db->like('id_pelanggan', $q);
         $this->db->or_like('nama_pelanggan', $q);
         $this->db->or_like('pelanggan.alamat', $q);
-        $this->db->or_like('cabang', $q);
+        $this->db->or_like('nama_cabang', $q);
         $this->db->or_like('nama_paket', $q);
         $this->db->from('pelanggan');
         $this->db->join('cabang', 'cabang.id_cabang = pelanggan.id_cabang');
         $this->db->join('paket', 'paket.id_paket = pelanggan.id_paket');
+        $this->db->join('mikrotik_user', 'mikrotik_user.id_mikrotik_user = pelanggan.id_mikrotik_user', 'LEFT');
         $this->db->limit($limit, $start);
         return $this->db->get()->result();
     }
@@ -150,6 +151,7 @@ class Pelanggan_model extends CI_Model
         $this->db->where('pelanggan.is_aktive', '1');
         return $this->db->get()->result_array();
     }
+    
 }
 
 /* End of file User_level_model.php */

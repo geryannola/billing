@@ -26,6 +26,7 @@ class Cabang_model extends CI_Model
     function get_by_id($id)
     {
         $this->db->where($this->id, $id);
+        $this->db->join('mikrotik', 'mikrotik.id_mikrotik = cabang.id_mikrotik');
         return $this->db->get($this->table)->row();
     }
 
@@ -33,10 +34,11 @@ class Cabang_model extends CI_Model
     function total_rows($q = NULL)
     {
         $this->db->like('id_cabang', $q);
-        $this->db->or_like('cabang', $q);
+        $this->db->or_like('nama_cabang', $q);
         $this->db->or_like('is_aktive', $q);
         $this->db->or_like('create_date', $q);
         $this->db->from($this->table);
+        $this->db->join('mikrotik', 'mikrotik.id_mikrotik = cabang.id_mikrotik');
         return $this->db->count_all_results();
     }
 
@@ -45,9 +47,10 @@ class Cabang_model extends CI_Model
     {
         $this->db->order_by($this->id, $this->order);
         $this->db->like('id_cabang', $q);
-        $this->db->or_like('cabang', $q);
+        $this->db->or_like('nama_cabang', $q);
         $this->db->or_like('is_aktive', $q);
         $this->db->or_like('create_date', $q);
+        $this->db->join('mikrotik', 'mikrotik.id_mikrotik = cabang.id_mikrotik');
         $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }

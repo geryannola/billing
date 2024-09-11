@@ -33,7 +33,9 @@ class Login extends CI_Controller
           $this->session->set_userdata('password', $_POST['password']);
           $this->session->set_userdata('nama', $user->nama);
           $this->session->set_userdata('level', $user->id_level);
+          $this->session->set_userdata('cabang', $user->id_cabang);
           $this->session->set_userdata('id_username', $user->id_username);
+          $this->session->set_userdata('bisnis', $user->id_bisnis);
           redirect('home');
         } else {
           echo "<script>

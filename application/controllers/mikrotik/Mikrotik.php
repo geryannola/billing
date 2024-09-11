@@ -11,10 +11,10 @@ class Mikrotik extends CI_Controller
 		check_not_login();
 		check_admin();
 		$this->load->model('Mikrotik_model');
-		$this->load->model('Hostpot_model');
-		$this->load->model('HostpotProfile_model');
-		$this->load->model('Ppp_model');
-		$this->load->model('PppProfile_model');
+		$this->load->model('MikrotikUser_model');
+		$this->load->model('MikrotikProfile_model');
+		// $this->load->model('Ppp_model');
+		// $this->load->model('PppProfile_model');
 		$this->load->library('form_validation');
 	}
 
@@ -79,33 +79,27 @@ class Mikrotik extends CI_Controller
 						// Lakukan sesuatu dengan nilai $array['default']
 						$comment = $user["comment"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$comment = '-';
 					}
 					if (isset($user['server'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$server = $user["server"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$server = 'all';
 					}
 					if (isset($user['password'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$password = $user["password"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$password = '-';
 					}
 					if (isset($user['profile'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$profile = $user["profile"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$profile = '-';
 					}
-					if ($this->Hostpot_model->check($id_hostpot, $id) == 0) {
+					if ($this->MikrotikUser_model->checkHostpot($id_hostpot, $id) == 0) {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $user[".id"]),
+							'service' => 'hostpot',
 							'server' => $server,
 							'name' => $user["name"],
 							'password' => $password,
@@ -116,7 +110,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->Hostpot_model->insert($data_hostpot);
+						$this->MikrotikUser_model->insert($data_hostpot);
 					} else {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $user[".id"]),
@@ -130,7 +124,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->Hostpot_model->updateMikrotik($id_hostpot, $mikrotik, $data_hostpot);
+						$this->MikrotikUser_model->updateMikrotik($id_hostpot, $mikrotik, $data_hostpot);
 					}
 				}
 				// PROFILE HOSTPOT
@@ -143,22 +137,19 @@ class Mikrotik extends CI_Controller
 				foreach ($hostpotprofile as $p) {
 					$id_profile_hostpot = str_replace("*", '', $p[".id"]);
 					if (isset($p['rate-limit'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$rate_limit = $p["rate-limit"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$rate_limit = '-';
 					}
 					if (isset($p['parent-queue'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$parent_queue = $p["parent-queue"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$parent_queue = '-';
 					}
-					if ($this->HostpotProfile_model->check($id_profile_hostpot, $id) == 0) {
+					if ($this->MikrotikProfile_model->checkHostpot($id_profile_hostpot, $id) == 0) {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $p[".id"]),
+							'service' => 'hostpot',
 							'name' => $p["name"],
 							'shared_users' => $p["shared-users"],
 							'rate_limit' => $rate_limit,
@@ -167,7 +158,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->HostpotProfile_model->insert($data_hostpot);
+						$this->MikrotikProfile_model->insert($data_hostpot);
 					} else {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $p[".id"]),
@@ -179,7 +170,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->HostpotProfile_model->updateMikrotik($id_profile_hostpot, $mikrotik, $data_hostpot);
+						$this->MikrotikProfile_model->updateMikrotik($id_profile_hostpot, $mikrotik, $data_hostpot);
 					}
 				}
 
@@ -193,29 +184,24 @@ class Mikrotik extends CI_Controller
 				foreach ($pppProfile as $p) {
 					$id_ppp = str_replace("*", '', $p[".id"]);
 					if (isset($user['local-address'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$local_address = $user["local-address"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$local_address = '-';
 					}
 					if (isset($user['remote-address'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$remote_address = $user["remote-address"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$remote_address = '-';
 					}
 					if (isset($user['rate-limit'])) {
-						// Lakukan sesuatu dengan nilai $array['default']
 						$rate_limit = $user["rate-limit"];
 					} else {
-						// Handle kasus ketika indeks 'default' tidak terdefinisi
 						$rate_limit = '-';
 					}
-					if ($this->PppProfile_model->check($id_ppp, $id) == 0) {
+					if ($this->MikrotikProfile_model->checkPpp($id_ppp, $id) == 0) {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $p[".id"]),
+							'service' => 'ppp',
 							'name' => $p["name"],
 							'local_address' => $local_address,
 							'remote_address' => $remote_address,
@@ -224,7 +210,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->PppProfile_model->insert($data_hostpot);
+						$this->MikrotikProfile_model->insert($data_hostpot);
 					} else {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $p[".id"]),
@@ -236,7 +222,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->PppProfile_model->updateMIkrotik($id_ppp, $mikrotik, $data_hostpot);
+						$this->MikrotikProfile_model->updateMIkrotik($id_ppp, $mikrotik, $data_hostpot);
 					}
 				}
 
@@ -250,7 +236,7 @@ class Mikrotik extends CI_Controller
 				foreach ($ppp as $p) {
 					$id_ppp = str_replace("*", '', $p[".id"]);
 
-					if ($this->Ppp_model->check($id_ppp, $id) == 0) {
+					if ($this->MikrotikUser_model->checkPpp($id_ppp, $id) == 0) {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $p[".id"]),
 							'name' => $p["name"],
@@ -263,7 +249,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->Ppp_model->insert($data_hostpot);
+						$this->MikrotikUser_model->insert($data_hostpot);
 					} else {
 						$data_hostpot = array(
 							'id' => str_replace("*", '', $p[".id"]),
@@ -277,7 +263,7 @@ class Mikrotik extends CI_Controller
 							'is_aktive' => 1,
 							'create_date' => date('y-m-d H:i:s')
 						);
-						$this->Ppp_model->updateMikrotik($id_ppp, $mikrotik, $data_hostpot);
+						$this->MikrotikUser_model->updateMikrotik($id_ppp, $mikrotik, $data_hostpot);
 					}
 				}
 				$API->disconnect();

@@ -37,15 +37,13 @@ class Users_model extends CI_Model
 		$this->db->or_like('password', $q);
 		$this->db->or_like('nama', $q);
 		$this->db->or_like('email', $q);
-		$this->db->or_like('alamat', $q);
-		$this->db->or_like('kota', $q);
-		$this->db->or_like('provinsi', $q);
 		$this->db->or_like('telepon', $q);
 		$this->db->or_like('users.id_level', $q);
 		$this->db->or_like('users.is_aktive', $q);
-		$this->db->or_like('create_date', $q);
+		// $this->db->or_like('create_date', $q);
 		$this->db->from($this->table);
 		$this->db->join('user_level', 'user_level.id_level = users.id_level');
+		$this->db->join('cabang', 'cabang.id_cabang = users.id_cabang','left');
 		return $this->db->count_all_results();
 	}
 
@@ -58,15 +56,11 @@ class Users_model extends CI_Model
 		$this->db->or_like('password', $q);
 		$this->db->or_like('nama', $q);
 		$this->db->or_like('email', $q);
-		$this->db->or_like('alamat', $q);
-		$this->db->or_like('kota', $q);
-		$this->db->or_like('provinsi', $q);
 		$this->db->or_like('telepon', $q);
 		$this->db->or_like('users.id_level', $q);
 		$this->db->or_like('users.is_aktive', $q);
-		$this->db->or_like('create_date', $q);
-
 		$this->db->join('user_level', 'user_level.id_level = users.id_level');
+		$this->db->join('cabang', 'cabang.id_cabang = users.id_cabang','left');
 		$this->db->limit($limit, $start);
 		return $this->db->get($this->table)->result();
 	}

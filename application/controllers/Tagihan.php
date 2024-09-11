@@ -14,6 +14,7 @@ class Tagihan extends CI_Controller
 		$this->load->model('Pelanggan_model');
 		$this->load->model('Cabang_model');
 		$this->load->model('Whatsapp_model');
+		$this->load->model('Xendit_model');
 		$this->load->library('form_validation');
 	}
 
@@ -99,6 +100,7 @@ class Tagihan extends CI_Controller
 			$bulan = $this->input->post('bulan');
 			$tahun = $this->input->post('tahun');
 			$diskon = $this->input->post('diskon');
+			$base_url = base_url();
 			$sql = $this->db->query("SELECT id_pelanggan FROM tagihan where id_pelanggan='$id_pelanggan' AND bulan='$bulan' AND tahun='$tahun'");
 			$cek_tagihan = $sql->num_rows();
 
@@ -128,11 +130,30 @@ class Tagihan extends CI_Controller
 				$kirim = $this->input->post('kirim', TRUE);
 				$keyword = $no_wa . "-" . $bulan . "-" . $tahun;
 				if ($kirim == 1) {
+
 					$harga_paket = number_format($data_paket['harga_paket'] - ($data_paket['harga_paket'] * $diskon / 100));
 					$username = $data_paket['username'];
 					$nama_pelanggan = $data_paket['nama_pelanggan'];
-
-					$message = 'Yth Pelanggan ABHOSTPOT \n\nKami Informasikan bahwa Jumlah Tagihan Internet Anda untuk: \nuser ' . $username . ' an ' . $nama_pelanggan . '\nBulan = ' . $bulan . ' Tahun = ' . $tahun . ' \nSebesar ' . $harga_paket . '  \n \nBatas Pembayaran Sebelum *Tanggal 20* \n\nTempat Pembayaran bisa di Bayarkan Lewat Rasya KIOS (Perum ABC Lr5 A1/96)/\nTranfer Ke Rekening BPD 0102010000148361 an Syamsul Rijal \n\nInfo mengenai tata cara pembayaran silahkan hubungi \nwa.me/6281355071767\nCek Tagihan = https://billingabhostpot.abkreatorpratama.com/ \nTerima Kasih telah berlangganan dengan kami ABhostpot \n\n\n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem mohon untuk tidak dibalas*';
+					$date_future = new DateTime('now', new DateTimeZone('UTC'));
+					$date_future->add(new DateInterval('P1Y'));
+        			$formatted_future = $date_future->format('Y-m-d\TH:i:s.u\Z');
+				    $data_xendit = array(
+						'url' => 'https://api.xendit.co',
+						'link' => "/qr_codes",
+						'timestamp' => time(),
+						'reference_id' => 'order-id-'. time(),
+						'expires_at' => $formatted_future,
+					);
+					// $result = $this->Xendit_model->CreateQRCode($data_xendit);
+					$result = $this->Xendit_model->CreateInvoice();
+					$result = json_decode($result, true);
+					$id = $result['id'];
+					$reference_id = $result['reference_id'];
+					// $result = $this->Xendit_model->CreateQRCode($data_xendit);
+					var_dump($result);
+					die();
+					
+					$message = 'Yth Pelanggan ABHOSTPOT \n\nKami Informasikan bahwa Jumlah Tagihan Internet Anda untuk: \nuser ' . $username . ' an ' . $nama_pelanggan . '\nBulan = ' . $bulan . ' Tahun = ' . $tahun . ' \nSebesar ' . $harga_paket . '  \n \nBatas Pembayaran Sebelum *Tanggal 20* \n\nTempat Pembayaran bisa di Bayarkan Lewat Rasya KIOS (Perum ABC Lr5 A1/96)\nPembayaran melalui QRIS = ' . $base_url . 'qr?kode='.$id.'\nTranfer Ke Rekening BPD 0102010000148361 an Syamsul Rijal \n\nInfo mengenai tata cara pembayaran silahkan hubungi \nwa.me/6281355071767\nCek Tagihan = ' . $base_url . ' \nTerima Kasih telah berlangganan dengan kami ABhostpot \n\n\n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem mohon untuk tidak dibalas*';
 					$data_wa = array(
 						'phonenumber' => $hp,
 						'message' => $message,
@@ -141,6 +162,8 @@ class Tagihan extends CI_Controller
 					);
 					$result = $this->Whatsapp_model->whatsapp($data_wa);
 					$result = json_decode($result, true);
+					// var_dump($message);
+					// die();
 
 					if ($result['success'] === true) {
 						$notif = 'Sent';
@@ -160,6 +183,8 @@ class Tagihan extends CI_Controller
 					'notif_kirim' => $notif,
 					'tgl_bayar' => '0000 - 00 - 00',
 					'keyword' => $keyword,
+					'qr_xendit' => $id,
+					'reference_id' => $reference_id,
 					'create_date' => date('y-m-d H:i:s'),
 				);
 
@@ -393,26 +418,26 @@ class Tagihan extends CI_Controller
 			$harga_paket = number_format($row->jml_tagihan);
 			$nama_bulan = $row->nama_bulan;
 			$tahun = $row->tahun;
-			$message = 'السَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ
+// 			$message = 'السَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ
 
-Maha suci Allah yang telah menjadikan segala sesuatu lebih indah dan sempurna.
+// Maha suci Allah yang telah menjadikan segala sesuatu lebih indah dan sempurna.
 
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami :
+// Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami :
 
-Liza & Wawan
+// Liza & Wawan
 
-Berikut link untuk info lengkap dari acara kami untuk mengantarkan Bapak/Ibu, teman, serta sahabat ketujuan :
-https://jadinikah.org/khalizawawan/?to=' . $nama . '
+// Berikut link untuk info lengkap dari acara kami untuk mengantarkan Bapak/Ibu, teman, serta sahabat ketujuan :
+// https://jadinikah.org/khalizawawan/?to=' . $nama . '
 
-Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
+// Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
 
-Mohon maaf perihal undangan hanya di bagikan melalui  pesan ini.
+// Mohon maaf perihal undangan hanya di bagikan melalui  pesan ini.
 
-وَالسَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ
+// وَالسَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ
 
-Kami yang berbahagia
-Liza & Wawan';
-			// $message = 'Yth Pelanggan ABhostpot \n\nPembayaran internet a/n ' . $nama_pelanggan . ' untuk :\nBulan = ' . $nama_bulan . ' \nTahun = ' . $tahun . '\nJumlah = ' . $harga_paket . '\nMohon di selesaikan sebelum tanggal *20*, \n\n*Abaikan informasi ini jika telah melakukan pembayaran\r\nCek Pembayaran melalui = \n https://billingabhostpot.abkreatorpratama.com/ \n\nTerima kasih\r\n http://abhostpot.com/login?\n \n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem, mohon untuk tidak dibalas*';
+// Kami yang berbahagia
+// Liza & Wawan';
+			$message = 'Yth Pelanggan ABhostpot \n\nPembayaran internet a/n ' . $nama_pelanggan . ' untuk :\nBulan = ' . $nama_bulan . ' \nTahun = ' . $tahun . '\nJumlah = ' . $harga_paket . '\nMohon di selesaikan sebelum tanggal *20*, \n\n*Abaikan informasi ini jika telah melakukan pembayaran\r\nCek Pembayaran melalui = \n https://billingabhostpot.abkreatorpratama.com/ \n\nTerima kasih\r\n http://abhostpot.com/login?\n \n*Informasi dalam pesan ini digenerate dan dikirim otomatis oleh sistem, mohon untuk tidak dibalas*';
 
 			$data_wa = array(
 				'phonenumber' => $hp,

@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('database', 'form_validation', 'session', 'Template', 'Mikweb');
+$autoload['libraries'] = array('database', 'form_validation', 'session', 'Template', 'Mikweb','Qr_code');
 
 /*
 | -------------------------------------------------------------------
@@ -89,7 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('form', 'url', 'html', 'fungsi', 'whatsapp_url', 'ip_mikrotik', 'formatUptime');
+$autoload['helper'] = array('form', 'url', 'html', 'fungsi', 'whatsapp_url', 'ip_mikrotik');
 
 /*
 | -------------------------------------------------------------------

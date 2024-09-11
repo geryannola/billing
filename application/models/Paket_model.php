@@ -30,24 +30,29 @@ class Paket_model extends CI_Model
     }
 
     // get total rows
-    function total_rows($q = NULL)
+    function total_rows($q = NULL, $bisnis)
     {
         $this->db->like('id_paket', $q);
         $this->db->or_like('nama_paket', $q);
-        $this->db->or_like('is_aktive', $q);
-        $this->db->or_like('create_date', $q);
+        $this->db->or_like('paket.create_date', $q);
         $this->db->from($this->table);
+        $this->db->join('mikrotik', 'mikrotik.id_mikrotik = paket.id_mikrotik');
+        $this->db->where('paket.id_bisnis', $bisnis);
         return $this->db->count_all_results();
     }
 
     // get data with limit and search
-    function get_limit_data($limit, $start = 0, $q = NULL)
+    function get_limit_data($limit, $start = 0, $q = NULL,$bisnis)
     {
+        $this->db->select('*');
+        $this->db->select('paket.is_aktive');
+        // $this->db->select('paket.create_date');
         $this->db->order_by($this->id, $this->order);
         $this->db->like('id_paket', $q);
         $this->db->or_like('nama_paket', $q);
-        $this->db->or_like('is_aktive', $q);
-        $this->db->or_like('create_date', $q);
+        $this->db->or_like('paket.create_date', $q);
+		$this->db->join('mikrotik', 'mikrotik.id_mikrotik = paket.id_mikrotik');
+        $this->db->where('paket.id_bisnis', $bisnis);
         $this->db->limit($limit, $start);
         return $this->db->get($this->table)->result();
     }

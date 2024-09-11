@@ -18,34 +18,33 @@ class SupportTickets extends CI_Controller
 	{
 		$q = urldecode($this->input->get('q', TRUE));
 		$start = intval($this->uri->segment(3));
+		$id_username = $_SESSION['id_username'];
 
 		if ($q <> '') {
-			$config['base_url'] = base_url() . '.php/c_url/index.html?q=' . urlencode($q);
-			$config['first_url'] = base_url() . 'index.php/kas_keluar/index.html?q=' . urlencode($q);
+			$config['base_url'] = base_url() . 'index.php/SupportTickets/index.html?q=' . urlencode($q);
+			$config['first_url'] = base_url() . 'index.php/SupportTickets/index.html?q=' . urlencode($q);
 		} else {
-			$config['base_url'] = base_url() . 'index.php/kas_keluar/index/';
-			$config['first_url'] = base_url() . 'index.php/kas_keluar/index/';
+			$config['base_url'] = base_url() . 'index.php/SupportTickets/index/';
+			$config['first_url'] = base_url() . 'index.php/SupportTickets/index/';
 		}
-
+// var_dump($_SESSION['id_username']);
 		$config['per_page'] = 10;
 		$config['page_query_string'] = FALSE;
-		$config['total_rows'] = $this->SupportTickets_model->total_rows($q);
-		$kas_keluar = $this->SupportTickets_model->get_limit_data($config['per_page'], $start, $q);
-		$total_keluar = $this->SupportTickets_model->total_keluar();
+		$config['total_rows'] = $this->SupportTickets_model->total_rows($q,$id_username);
+		$SupportTickets = $this->SupportTickets_model->get_limit_data($config['per_page'], $start, $q,$id_username);
 		$config['full_tag_open'] = '<ul class="pagination pagination-sm no-margin pull-right">';
 		$config['full_tag_close'] = '</ul>';
 		$this->load->library('pagination');
 		$this->pagination->initialize($config);
 
 		$data = array(
-			'kas_keluar_data' => $kas_keluar,
+			'SupportTickets_data' => $SupportTickets,
 			'q' => $q,
 			'pagination' => $this->pagination->create_links(),
 			'total_rows' => $config['total_rows'],
 			'start' => $start,
-			'total_keluar' => set_value('total_keluar', $total_keluar->keluar),
 		);
-		$this->template->load('template', 'kas_keluar/kas_keluar_list', $data);
+		$this->template->load('template', 'pelanggan/supportTickets/supportTickets_list', $data);
 	}
 
 	public function read($id)
@@ -58,10 +57,10 @@ class SupportTickets extends CI_Controller
 				'uraian_km' => $row->uraian_km,
 				'keluar' => $row->keluar,
 			);
-			$this->template->load('template', 'kas_keluar/kas_keluar_read', $data);
+			$this->template->load('template', 'SupportTickets/SupportTickets_read', $data);
 		} else {
 			$this->session->set_flashdata('message', 'Record Not Found');
-			redirect(site_url('kas_keluar'));
+			redirect(site_url('SupportTickets'));
 		}
 	}
 
@@ -69,17 +68,19 @@ class SupportTickets extends CI_Controller
 	{
 		$data = array(
 			'button' => 'Create',
-			'action' => site_url('kas_keluar/create_action'),
-			'id_km' => set_value('id_km'),
-			'tgl_km' => set_value('tgl_km'),
-			'uraian_km' => set_value('uraian_km'),
-			'keluar' => set_value('keluar'),
-			'id_cara_bayar' => set_value('id_cara_bayar'),
-			// 'masuk' => set_value('masuk'),
-			// 'jenis' => set_value('jenis'),
+			'action' => site_url('pelanggan/supportTickets/create_action'),
+			'id_support_tickets' => set_value('id_support_tickets'),
+			'jenis_ticket' => set_value('jenis_ticket'),
+			'judul_ticket' => set_value('judul_ticket'),
+			'pesan_ticket' => set_value('pesan_ticket'),
+			'foto_ticket' => set_value('foto_ticket'),
+			'is_aktive' => set_value('is_aktive'),
+			'create_date' => set_value('create_date'),
+			'Attachments' => set_value('Attachments'),
+			'create_user' => $_SESSION['id_username']
 		);
-		$data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
-		$this->template->load('template', 'kas_keluar/kas_keluar_form', $data);
+		$data['m_jenis_ticket'] = $this->SupportTickets_model->tampil_jenisTicket();
+		$this->template->load('template', 'pelanggan/SupportTickets/SupportTickets_form', $data);
 	}
 
 	public function create_action()
@@ -89,18 +90,72 @@ class SupportTickets extends CI_Controller
 		if ($this->form_validation->run() == FALSE) {
 			$this->create();
 		} else {
-			$data = array(
-				'tgl_km' => $this->input->post('tgl_km', TRUE),
-				'uraian_km' => $this->input->post('uraian_km', TRUE),
-				'masuk' => 0,
-				'keluar' => $this->input->post('keluar', TRUE),
-				'jenis' => 'Keluar',
-				'id_cara_bayar' => $this->input->post('id_cara_bayar', TRUE),
-			);
+			$attachments = $this->input->post('attachments', TRUE);
+			if ($attachments != "") {
+				$ekstensi_diperbolehkan    = array('png', 'jpg', 'jpeg', 'pdf');
+				$nama = $_FILES['attachments']['name'];
+				$x = explode('.', $nama);
+				$ekstensi = strtolower(end($x));
+				$ukuran    = $_FILES['attachments']['size'];
+				$file_tmp = $_FILES['attachments']['tmp_name'];
+				$date = date('y-m-d H:i:s');
+				$datenow = strtotime($date);
+				$image = $nira . '.' . $datenow . '.' . $ekstensi;
+				// $id_iuran = $this->uuid->v4();
+				// $id_iuran = preg_replace("/[-]/", "", $id_iuran);
 
-			$this->SupportTickets_model->insert($data);
-			$this->session->set_flashdata('message', 'Create Record Success');
-			redirect(site_url('kas_keluar'));
+				$data = array(
+					'jenis_ticket' => $this->input->post('jenis_ticket', TRUE),
+					'judul_ticket' => $this->input->post('judul_ticket', TRUE),
+					'pesan_ticket' => $this->input->post('pesan_ticket', TRUE),
+					'foto_ticket' => $this->input->post('foto_ticket', TRUE),
+					'create_user' => $this->input->post('create_user', TRUE),
+					'is_aktive' => 1,
+					'create_date' => date('y-m-d H:i:s')
+				);
+				if (in_array($ekstensi, $ekstensi_diperbolehkan) == true) {
+					if ($ukuran < 1044070) {
+						$query =   $this->Iuran_model->insert($data);
+						// move_uploaded_file($file_tmp, '/var/www/html/login/assets/images/buktibayar/' . $image);
+						move_uploaded_file($file_tmp, 'assets/images/iuran/' . $image);
+
+						// WhatsAPP 
+						// WA Pengurus
+						$pengurus_data = $this->Pengurus_model->get_by_organisasi($id_organisasi);
+						$messagePengurus = 'Halo Admin, Selamat Pagi Bapak/Ibu \nAda Penambahan Iuran at ' . $nira;
+						foreach ($pengurus_data as $pengurus) {
+							$hp = no_wa($pengurus->telepon);
+							$wa_pengurus = array(
+								'phonenumber' => $hp,
+								'message' => $messagePengurus,
+								'url' => whatsapp_url(),
+								'link' => "/send-message",
+							);
+							$this->Whatsapp_model->whatsapp($wa_pengurus);
+						}
+
+						if ($query == true) {
+							$this->session->set_flashdata('message', 'Create Record Success');
+							redirect(site_url('iuran'));
+						} else {
+							$this->session->set_flashdata('message', 'GAGAL MENGUPLOAD GAMBAR');
+							redirect(site_url('iuran'));
+						}
+					} else {
+						$this->session->set_flashdata('message', 'UKURAN FILE TERLALU BESAR');
+						redirect(site_url('iuran'));
+					}
+				} else {
+					$this->session->set_flashdata('message', 'EKSTENSI FILE YANG DI UPLOAD TIDAK DI PERBOLEHKAN');
+					redirect(site_url('iuran'));
+				}
+
+
+				$this->SupportTickets_model->insert($data);
+				$this->session->set_flashdata('message', 'Create Record Success');
+				redirect(site_url('pelanggan/SupportTickets'));
+			} else {
+			}
 		}
 	}
 
@@ -111,7 +166,7 @@ class SupportTickets extends CI_Controller
 		if ($row) {
 			$data = array(
 				'button' => 'Update',
-				'action' => site_url('kas_keluar/update_action'),
+				'action' => site_url('SupportTickets/update_action'),
 				'id_km' => set_value('id_km', $row->id_km),
 				'tgl_km' => set_value('tgl_km', $row->tgl_km),
 				'uraian_km' => set_value('uraian_km', $row->uraian_km),
@@ -119,10 +174,10 @@ class SupportTickets extends CI_Controller
 				'id_cara_bayar' => set_value('id_cara_bayar', $row->id_cara_bayar),
 			);
 			$data['cara_bayar'] = $this->Kas_masuk_model->tampil_bayar();
-			$this->template->load('template', 'kas_keluar/kas_keluar_form', $data);
+			$this->template->load('template', 'pelanggan/SupportTickets/SupportTickets_form', $data);
 		} else {
 			$this->session->set_flashdata('message', 'Record Not Found');
-			redirect(site_url('kas_keluar'));
+			redirect(site_url('pelanggan/SupportTickets'));
 		}
 	}
 
@@ -144,7 +199,7 @@ class SupportTickets extends CI_Controller
 
 			$this->SupportTickets_model->update($this->input->post('id_km', TRUE), $data);
 			$this->session->set_flashdata('message', 'Update Record Success');
-			redirect(site_url('kas_keluar'));
+			redirect(site_url('pelanggan/SupportTickets'));
 		}
 	}
 
@@ -155,30 +210,28 @@ class SupportTickets extends CI_Controller
 		if ($row) {
 			$this->SupportTickets_model->delete($id);
 			$this->session->set_flashdata('message', 'Delete Record Success');
-			redirect(site_url('kas_keluar'));
+			redirect(site_url('pelanggan/SupportTickets'));
 		} else {
 			$this->session->set_flashdata('message', 'Record Not Found');
-			redirect(site_url('kas_keluar'));
+			redirect(site_url('pelanggan/SupportTickets'));
 		}
 	}
 
 	public function _rules()
 	{
-		$this->form_validation->set_rules('tgl_km', 'tgl km', 'trim|required');
-		$this->form_validation->set_rules('uraian_km', 'uraian km', 'trim|required');
-		// $this->form_validation->set_rules('masuk', 'masuk', 'trim|required');
-		$this->form_validation->set_rules('keluar', 'keluar', 'trim|required');
-		// $this->form_validation->set_rules('jenis', 'jenis', 'trim|required');
+		$this->form_validation->set_rules('jenis_ticket', 'Jenis Ticket', 'trim|required');
+		$this->form_validation->set_rules('judul_ticket', 'Judul Ticket', 'trim|required');
+		$this->form_validation->set_rules('pesan_ticket', 'Pesan Ticket', 'trim|required');
 
-		$this->form_validation->set_rules('id_km', 'id_km', 'trim');
+		$this->form_validation->set_rules('id_support_tickets', 'id_support_tickets', 'trim');
 		$this->form_validation->set_error_delimiters('<span class="text-danger">', '</span>');
 	}
 
 	public function excel()
 	{
 		$this->load->helper('exportexcel');
-		$namaFile = "kas_keluar.xls";
-		$judul = "kas_keluar";
+		$namaFile = "SupportTickets.xls";
+		$judul = "SupportTickets";
 		$tablehead = 0;
 		$tablebody = 1;
 		$nourut = 1;
@@ -222,19 +275,19 @@ class SupportTickets extends CI_Controller
 	public function word()
 	{
 		header("Content-type: application/vnd.ms-word");
-		header("Content-Disposition: attachment;Filename=kas_keluar.doc");
+		header("Content-Disposition: attachment;Filename=SupportTickets.doc");
 
 		$data = array(
-			'kas_keluar_data' => $this->SupportTickets_model->get_all(),
+			'SupportTickets_data' => $this->SupportTickets_model->get_all(),
 			'start' => 0
 		);
 
-		$this->load->view('kas_keluar/kas_keluar_doc', $data);
+		$this->load->view('SupportTickets/SupportTickets_doc', $data);
 	}
 }
 
-/* End of file kas_keluar.php */
-/* Location: ./application/controllers/kas_keluar.php */
+/* End of file SupportTickets.php */
+/* Location: ./application/controllers/SupportTickets.php */
 /* Please DO NOT modify this information : */
 /* Generated by Harviacode Codeigniter CRUD Generator 2020-05-22 18:09:46 */
 /* http://harviacode.com */
